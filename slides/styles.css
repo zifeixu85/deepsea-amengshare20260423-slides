@@ -3106,11 +3106,19 @@ body.is-overview .progress { display: none; }
   }
   .mobile-hint__sep { opacity: 0.45; }
 
-  /* --- layouts: stack everything 2-col into 1-col --- */
-  .two-col, .intro, .principle__body, .skill-detail, .own-skill, .qa,
+  /* --- layouts: stack most 2-col into 1-col, but keep compact L-R for intro --- */
+  .two-col, .principle__body, .skill-detail, .own-skill, .qa,
   .deploy-section, .course-map, .principles-grid, .taste-grid {
     grid-template-columns: 1fr; gap: 1rem;
   }
+  /* .intro keeps small avatar on the left, text on the right — looks better than stacking */
+  .intro {
+    grid-template-columns: 96px 1fr;
+    gap: 0.9rem;
+    align-items: start;
+  }
+  .intro__avatar { max-width: 96px; }
+  .intro__name { font-size: 1.35rem; }
   .compare__pair, .demo-split__pair, .skill-matrix__grid {
     grid-template-columns: 1fr;
   }
