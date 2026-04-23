@@ -2409,6 +2409,86 @@ body.is-overview .progress { display: none; }
 .dial__range { font-size: 0.7rem; color: var(--ink-mute); }
 .dial__range strong { color: var(--ink); }
 
+/* ---------- dial comparison (8/6/4 分别是什么样) ---------- */
+.dial-compare {
+  display: grid;
+  gap: clamp(14px, 1.6vh, 22px);
+  margin-top: clamp(1rem, 2vh, 1.6rem);
+}
+.dial-row {
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: clamp(14px, 1.4vw, 18px) clamp(16px, 1.6vw, 22px);
+  display: grid;
+  gap: 12px;
+}
+.dial-row__head {
+  display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed var(--line);
+}
+.dial-row__name {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  font-size: clamp(1.05rem, 0.95rem + 0.4vw, 1.35rem);
+  color: var(--ink);
+  letter-spacing: 0.01em;
+}
+.dial-row__hint {
+  font-family: var(--font-mono);
+  font-size: var(--text-tiny);
+  color: var(--ink-mute);
+  letter-spacing: 0.08em;
+}
+.dial-row__cells {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.dial-cell {
+  position: relative;
+  background: rgba(0,0,0,0.18);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px 14px 14px;
+  display: grid; gap: 6px;
+  min-height: 92px;
+  align-content: start;
+}
+[data-theme="light"] .dial-cell { background: rgba(0,0,0,0.02); }
+.dial-cell--mid {
+  background: color-mix(in oklch, var(--accent) 10%, transparent);
+  border-color: color-mix(in oklch, var(--accent) 35%, var(--line));
+}
+.dial-cell__v {
+  font-family: var(--font-serif);
+  font-weight: 800;
+  font-size: clamp(1.4rem, 1rem + 1vw, 2rem);
+  line-height: 1;
+  color: var(--accent);
+  letter-spacing: -0.02em;
+}
+.dial-cell__label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+.dial-cell p {
+  margin: 4px 0 0;
+  color: var(--ink-dim);
+  font-size: clamp(0.82rem, 0.78rem + 0.2vw, 0.95rem);
+  line-height: 1.5;
+}
+.dial-cell--mid .dial-cell__label { color: var(--accent); }
+
+@media (max-width: 767px) {
+  .dial-row__cells { grid-template-columns: 1fr; }
+  .dial-cell { min-height: 0; }
+}
+
 /* ---------- 4 skill workflow ---------- */
 .workflow {
   display: grid; grid-template-rows: auto 1fr;
