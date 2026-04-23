@@ -2972,8 +2972,24 @@ body.is-overview .progress { display: none; }
   .slide {
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+    /* sentinel spacer at the end of every slide so the last line of content
+       always sits well above the floating pill nav, even if a slide layout
+       overrides padding-bottom via grid/flex centering */
+    scroll-padding-bottom: 7rem;
   }
   .slide::-webkit-scrollbar { width: 0; height: 0; }
+  .slide.is-active::after {
+    content: "";
+    display: block;
+    height: calc(4rem + env(safe-area-inset-bottom, 0px));
+    flex-shrink: 0;
+    grid-column: 1 / -1;
+    pointer-events: none;
+  }
+  /* cover/divider slides centered: give them extra breathing room */
+  .slide.cover, .slide.divider, .slide.end {
+    padding-bottom: calc(8rem + env(safe-area-inset-bottom, 0px));
+  }
 
     /* tighter type on mobile */
     --text-display: clamp(2.6rem, 8vw, 4rem);
