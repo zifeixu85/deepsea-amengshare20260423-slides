@@ -1756,11 +1756,14 @@
   </main>
 
   <nav class="nav" aria-label="幻灯片导航">
-    <button id="overview" aria-label="概览模式 (O)" title="概览模式 (O)">▦</button>
-    <button id="prev" aria-label="上一页">‹</button>
+    <button id="overview" aria-label="概览模式 (O)" title="概览模式 (O)" data-label="概览">▦</button>
+    <button id="prev" aria-label="上一页" title="上一页 (←)" data-label="上一页">‹</button>
     <span class="nav__count"><strong id="cur2">1</strong>&nbsp;/&nbsp;<span id="total2">1</span></span>
-    <button id="next" aria-label="下一页">›</button>
+    <button id="next" aria-label="下一页" title="下一页 (→)" data-label="下一页">›</button>
   </nav>
+  <div class="mobile-hint" id="mobile-hint" aria-hidden="true">
+    <span>← → 或左右滑动切换</span><span class="mobile-hint__sep">·</span><span>点击 T 切换主题</span>
+  </div>
 
   <script>
     (function () {
@@ -1883,6 +1886,10 @@
       const hashIdx = parseInt((location.hash || '#1').slice(1), 10);
       const startIdx = (!Number.isNaN(hashIdx) && hashIdx >= 1 && hashIdx <= total) ? hashIdx - 1 : 0;
       go(startIdx, { push: false, force: true });
+
+      // Hide mobile hint after 4 seconds
+      const $hint = document.getElementById('mobile-hint');
+      if ($hint) setTimeout(() => { $hint.style.opacity = '0'; $hint.style.pointerEvents = 'none'; }, 4000);
     })();
   </script>
 </body>
