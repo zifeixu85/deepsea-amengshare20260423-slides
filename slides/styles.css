@@ -2982,9 +2982,7 @@ body.is-overview .progress { display: none; }
   .chrome-top__counter { font-size: 0.6rem; }
   .theme-toggle { padding: 5px 10px 5px 8px; font-size: 0.7rem; gap: 5px; }
   .theme-toggle > .ico { width: 16px; height: 16px; font-size: 13px; }
-  /* Keep label visible on mobile (larger tap target + clear context) */
-  #theme-toggle > .theme-toggle__label--to-light,
-  #theme-toggle > .theme-toggle__label--to-dark { display: inline-flex; }
+  /* labels: let the data-theme rules at top of file control which one shows */
 
   /* bottom nav — bigger touch targets on mobile */
   .nav { font-size: 0.7rem; padding: 6px 8px; bottom: 14px; gap: 6px; }
