@@ -1367,6 +1367,29 @@ body.is-overview .progress { display: none; }
   position: absolute; top: 0; left: 0; width: 4px; height: 100%;
   background: var(--swatch, var(--accent));
 }
+/* recommended pick highlight */
+.skill-card--pick {
+  border-color: color-mix(in oklch, var(--swatch, var(--accent)) 55%, var(--line));
+  padding-top: 2.2rem;
+  box-shadow:
+    0 0 0 1px color-mix(in oklch, var(--swatch, var(--accent)) 25%, transparent),
+    0 18px 40px -20px color-mix(in oklch, var(--swatch, var(--accent)) 40%, transparent);
+}
+.skill-card--pick::before { width: 6px; }
+.skill-card__pick {
+  position: absolute;
+  top: 10px; right: 12px;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: color-mix(in oklch, var(--swatch, var(--accent)) 18%, transparent);
+  color: var(--swatch, var(--accent));
+  border: 1px solid color-mix(in oklch, var(--swatch, var(--accent)) 50%, transparent);
+  white-space: nowrap;
+  z-index: 2;
+}
 .skill-card__head {
   display: flex; justify-content: space-between; align-items: baseline;
   gap: 1rem;
