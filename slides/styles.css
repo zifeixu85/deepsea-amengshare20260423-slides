@@ -2963,8 +2963,8 @@ body.is-overview .progress { display: none; }
   :root {
     --slide-pad-x: clamp(1rem, 4vw, 1.5rem);
     --slide-pad-top: clamp(2.6rem, 6vh, 3.6rem);
-    /* bottom padding must clear the new full-width nav bar (~70px + safe-area) */
-    --slide-pad-bottom: calc(6rem + env(safe-area-inset-bottom, 0px));
+    /* clear the floating pill nav (~50px) + breathing room + safe-area */
+    --slide-pad-bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px));
 
     /* tighter type on mobile */
     --text-display: clamp(2.6rem, 8vw, 4rem);
@@ -2986,75 +2986,69 @@ body.is-overview .progress { display: none; }
   /* labels: let the data-theme rules at top of file control which one shows */
 
   /* bottom nav — bigger touch targets on mobile */
-  /* Mobile-native bottom nav: full-width bar, thumb-friendly 3-zone layout
+  /* Mobile nav: floating centered pill group — no full-width bar.
+     Bigger touch targets + Chinese labels, but doesn't block content.
      Order matches HTML: overview | prev | count | next */
   .nav {
-    left: 0; right: 0; bottom: 0; transform: none;
-    padding: 10px 14px calc(10px + env(safe-area-inset-bottom, 0px));
-    gap: 10px;
-    background: linear-gradient(180deg, transparent, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.72));
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 0; border-top: 1px solid rgba(255,255,255,0.06);
-    border-radius: 0;
-    display: grid;
-    grid-template-columns: 42px 1fr auto 1fr;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+    padding: 5px 6px;
+    gap: 4px;
+    background: rgba(12, 12, 14, 0.82);
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 999px;
+    box-shadow: 0 10px 30px -12px rgba(0,0,0,0.55);
+    display: inline-flex;
     align-items: center;
+    width: auto;
   }
   [data-theme="light"] .nav {
-    background: linear-gradient(180deg, transparent, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0.9));
-    border-top-color: var(--line);
+    background: rgba(255,255,255,0.88);
+    border-color: rgba(0,0,0,0.06);
+    box-shadow: 0 10px 30px -12px rgba(0,0,0,0.2);
   }
 
-  /* overview icon stays compact */
-  #overview {
-    width: 42px; height: 42px;
-    font-size: 1rem; border-radius: 10px;
-  }
+  #overview { width: 38px; height: 38px; font-size: 0.95rem; border-radius: 999px; }
 
-  /* prev / next become wide labeled pills */
+  /* prev / next as compact labeled pills */
   #prev, #next {
-    width: auto; height: 48px;
-    border-radius: 12px;
-    font-size: 0.85rem; font-weight: 500;
+    width: auto; height: 38px;
+    padding: 0 14px;
+    border-radius: 999px;
+    font-size: 0.78rem; font-weight: 500;
     letter-spacing: 0.04em;
     display: inline-flex; align-items: center; justify-content: center;
-    gap: 6px;
     transition: transform 120ms var(--ease), background 180ms var(--ease), filter 180ms var(--ease);
   }
   #prev {
-    color: var(--ink);
+    color: transparent;
     background: rgba(255,255,255,0.06);
     border: 1px solid var(--line);
   }
   [data-theme="light"] #prev { background: rgba(0,0,0,0.03); }
+  #prev::before { content: "← 上一页"; color: var(--ink); }
+
   #next {
-    color: #0a0a0a;
+    color: transparent;
     background: var(--accent);
     border: 1px solid var(--accent);
   }
-  #prev:active { transform: scale(0.97); background: rgba(255,255,255,0.1); }
-  #next:active { transform: scale(0.97); filter: brightness(0.92); }
-
-  /* hide the ‹ › glyphs from HTML, inject labels via ::before/::after */
-  #prev { color: transparent; }
-  #prev::before { content: "← 上一页"; color: var(--ink); }
-  #next { color: transparent; }
   #next::before { content: "下一页 →"; color: #0a0a0a; }
 
+  #prev:active { transform: scale(0.96); background: rgba(255,255,255,0.12); }
+  #next:active { transform: scale(0.96); filter: brightness(0.92); }
+
   .nav__count {
-    min-width: 3.2rem;
+    min-width: 2.6rem;
     padding: 0 4px;
-    font-size: 0.65rem; color: var(--ink-mute);
-    text-align: center; line-height: 1.15;
-    font-family: var(--font-mono); letter-spacing: 0.05em;
+    font-size: 0.62rem; color: var(--ink-mute);
+    text-align: center; line-height: 1;
+    font-family: var(--font-mono); letter-spacing: 0.04em;
   }
-  .nav__count strong {
-    display: block;
-    color: var(--ink-dim);
-    font-size: 0.9rem;
-    font-weight: 600;
-  }
+  .nav__count strong { color: var(--ink-dim); font-weight: 600; font-size: 0.72rem; }
 
   /* progress bar thinner */
   .progress { height: 1.5px; }
@@ -3063,7 +3057,7 @@ body.is-overview .progress { display: none; }
   .mobile-hint {
     display: flex; align-items: center; justify-content: center; gap: 8px;
     position: fixed;
-    bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+    bottom: calc(70px + env(safe-area-inset-bottom, 0px));
     left: 50%; transform: translateX(-50%);
     background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);
     color: rgba(255,255,255,0.78); font-family: var(--font-sans); font-size: 0.65rem;
