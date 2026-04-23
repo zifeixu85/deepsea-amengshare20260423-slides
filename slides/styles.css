@@ -158,8 +158,14 @@ body::before {
 
 /* skill-card subtle stripe still works (uses --swatch) */
 
-/* taste tile minimalist — was light bg already, just bump contrast */
-/* taste tile soft / taste — used dark gradient backgrounds, override */
+/* taste tile soft / taste / minimalist — flip gradients for light theme */
+[data-theme="light"] .taste-tile[data-style="minimalist"] {
+  background: oklch(95% 0.005 80);
+  color: oklch(15% 0.01 80);
+}
+[data-theme="light"] .taste-tile[data-style="minimalist"] .taste-tile__name,
+[data-theme="light"] .taste-tile[data-style="minimalist"] .taste-tile__desc,
+[data-theme="light"] .taste-tile[data-style="minimalist"] .taste-tile__sample { color: oklch(28% 0.02 80); }
 [data-theme="light"] .taste-tile[data-style="soft"] {
   background: linear-gradient(135deg, oklch(92% 0.04 320), var(--bg-card));
 }
@@ -2351,10 +2357,11 @@ body.is-overview .progress { display: none; }
   letter-spacing: 0.06em;
 }
 .taste-tile[data-style="brutalist"]  { --swatch: oklch(72% 0.22 25); background: oklch(15% 0.01 60); }
-.taste-tile[data-style="minimalist"] { --swatch: oklch(80% 0.04 80); background: oklch(95% 0.005 80); color: oklch(15% 0.01 80); }
-.taste-tile[data-style="minimalist"] .taste-tile__name,
-.taste-tile[data-style="minimalist"] .taste-tile__desc,
-.taste-tile[data-style="minimalist"] .taste-tile__sample { color: oklch(28% 0.02 80); }
+/* dark-mode default: warm dim surface that hints at paper without going bright */
+.taste-tile[data-style="minimalist"] {
+  --swatch: oklch(80% 0.04 80);
+  background: linear-gradient(135deg, oklch(22% 0.015 80), var(--bg-card));
+}
 .taste-tile[data-style="soft"]       { --swatch: oklch(70% 0.16 320); background: linear-gradient(135deg, oklch(20% 0.04 320), var(--bg-card)); }
 .taste-tile[data-style="stitch"]     { --swatch: oklch(72% 0.18 200); }
 .taste-tile[data-style="redesign"]   { --swatch: oklch(76% 0.18 145); }
