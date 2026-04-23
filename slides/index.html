@@ -1502,11 +1502,12 @@
           <span class="skill-detail__id">Skill 04 · by Vercel</span>
           <h2 class="skill-detail__title">/web-design-guidelines</h2>
           <a class="skill-detail__link" href="https://github.com/vercel-labs/agent-skills" target="_blank" rel="noopener">github.com/vercel-labs/agent-skills ↗</a>
-          <p class="skill-detail__role">最后那一道<strong>事后体检</strong>。</p>
+          <p class="skill-detail__role">不只是"设计审美"——<br/>更是一份<strong>代码 × 体验的规范清单</strong>。</p>
           <ul class="skill-detail__points">
-            <li><strong>本质</strong>：一个 20 行的小 skill。每次调用时，去 WebFetch Vercel 维护的 guidelines，对你的 UI 跑一遍 audit。</li>
-            <li><strong>能达到的效果</strong>：用 Vercel 的标准做 cross-check —— 看你这一版有没有踩业内已知的坑。</li>
-            <li><strong>注意</strong>：依赖联网、偏合规层。知道有这么个东西，需要的时候再用就行。</li>
+            <li><strong>本质</strong>：一个小 skill。每次调用时去 WebFetch Vercel 维护的 guidelines（<strong>18 类规则</strong>），对你的代码跑一遍 audit。</li>
+            <li><strong>不只看设计</strong>：从<strong>可访问性 / 性能 / 表单 / 动画 / 水合安全 / i18n</strong> 到反模式扫描，覆盖的是工程质量，不是"好不好看"。</li>
+            <li><strong>装机量 76K+</strong>：skills.sh 排名探花。Vercel Labs 出品，沉淀了 Next.js / Vercel 平台的实战经验。</li>
+            <li><strong>什么时候用</strong>：页面写完后、上线前跑一遍；或审查 AI 生成代码的时候专门用它体检。</li>
           </ul>
         </div>
         <div class="skill-detail__right">
@@ -1528,8 +1529,128 @@
       </div>
     </section>
 
-    <!-- ==================== 27 · 4 个 skill 工作流 ==================== -->
-    <section class="slide" data-section="skills" data-overview="35 · 4 个 skill 怎么配合用">
+    <!-- ==================== 35 · web-design-guidelines · 18 类规则覆盖哪里 ==================== -->
+    <section class="slide" data-section="skills" data-overview="35 · web-design-guidelines · 18 类规则">
+      <div class="fd-explain">
+        <header class="fd-explain__head">
+          <span class="eyebrow">18 类规则 · 一次 audit 全查</span>
+          <h2 class="title-h2" style="margin-top:0.5rem;">不只审美 <span style="color:var(--ink-mute);">·</span><br/>
+            <span style="color:var(--accent);">代码 · 无障碍 · 性能 · 表单 · 国际化 · 全都管</span>
+          </h2>
+          <p class="subtle" style="margin-top:0.6rem;font-size:0.98rem;max-width:64ch;line-height:1.55;">
+            下面是最常踩的几类。真正被扫描的共 <strong style="color:var(--ink);">18 类、几百条规则</strong>。
+          </p>
+        </header>
+
+        <div class="wdg-grid">
+          <article class="wdg-card">
+            <header class="wdg-card__head">
+              <span class="wdg-card__icon">A11Y</span>
+              <div>
+                <h3>可访问性</h3>
+                <p class="wdg-card__hint">给所有人能用</p>
+              </div>
+            </header>
+            <ul class="wdg-card__rules">
+              <li>图标按钮必须有 <code>aria-label</code></li>
+              <li>输入控件必须 <code>&lt;label&gt;</code> 或 <code>aria-label</code></li>
+              <li>图片必须有 <code>alt</code> 和尺寸</li>
+              <li>交互元素必须可键盘操作</li>
+              <li>异步更新要 <code>aria-live="polite"</code></li>
+            </ul>
+          </article>
+
+          <article class="wdg-card">
+            <header class="wdg-card__head">
+              <span class="wdg-card__icon">PERF</span>
+              <div>
+                <h3>性能</h3>
+                <p class="wdg-card__hint">不卡、不爆首屏</p>
+              </div>
+            </header>
+            <ul class="wdg-card__rules">
+              <li>列表 &gt; 50 项必须虚拟化</li>
+              <li>渲染中严禁 <code>getBoundingClientRect</code> 等布局读</li>
+              <li>CDN 资源域加 <code>&lt;link rel="preconnect"&gt;</code></li>
+              <li>图片显式 <code>width/height</code> 防 CLS</li>
+            </ul>
+          </article>
+
+          <article class="wdg-card">
+            <header class="wdg-card__head">
+              <span class="wdg-card__icon">MOTION</span>
+              <div>
+                <h3>动画</h3>
+                <p class="wdg-card__hint">不晕、不过载</p>
+              </div>
+            </header>
+            <ul class="wdg-card__rules">
+              <li>遵守 <code>prefers-reduced-motion</code></li>
+              <li>只动 <code>transform</code> 和 <code>opacity</code></li>
+              <li>永不用 <code>transition: all</code></li>
+              <li>动画必须可中断</li>
+            </ul>
+          </article>
+
+          <article class="wdg-card">
+            <header class="wdg-card__head">
+              <span class="wdg-card__icon">FORMS</span>
+              <div>
+                <h3>表单</h3>
+                <p class="wdg-card__hint">填得顺</p>
+              </div>
+            </header>
+            <ul class="wdg-card__rules">
+              <li>必配 <code>autocomplete</code> 和语义 <code>name</code></li>
+              <li>用正确的 <code>type</code> / <code>inputmode</code></li>
+              <li><strong>永远不要阻止粘贴</strong>（密码/邮箱别拦）</li>
+              <li>错误内联显示，提交时聚焦第一错项</li>
+            </ul>
+          </article>
+
+          <article class="wdg-card">
+            <header class="wdg-card__head">
+              <span class="wdg-card__icon">SSR</span>
+              <div>
+                <h3>水合安全</h3>
+                <p class="wdg-card__hint">服务端渲染不闪</p>
+              </div>
+            </header>
+            <ul class="wdg-card__rules">
+              <li>SSR 首帧不得依赖 <code>window</code> / <code>document</code></li>
+              <li>服务端与客户端输出必须一致</li>
+              <li>hydration mismatch 零容忍</li>
+            </ul>
+          </article>
+
+          <article class="wdg-card">
+            <header class="wdg-card__head">
+              <span class="wdg-card__icon">MORE</span>
+              <div>
+                <h3>还有 13 类</h3>
+                <p class="wdg-card__hint">基本覆盖全部 Web 规范</p>
+              </div>
+            </header>
+            <ul class="wdg-card__rules wdg-card__rules--inline">
+              <li>Focus States</li><li>Typography</li><li>Images</li>
+              <li>Navigation &amp; State</li><li>Touch</li><li>Safe Areas</li>
+              <li>Dark Mode</li><li>i18n / Locale</li><li>Hover</li>
+              <li>Content &amp; Copy</li><li>Anti-patterns</li>
+              <li>Design · 阴影/边框</li><li>Content Handling</li>
+            </ul>
+          </article>
+        </div>
+
+        <footer class="wdg-foot">
+          <span>典型输出格式</span>
+          <code>Hero.tsx:24 · missing aria-label on icon button</code>
+          <code>Hero.tsx:51 · transition: all → list properties</code>
+        </footer>
+      </div>
+    </section>
+
+    <!-- ==================== 36 · 4 个 skill 工作流 ==================== -->
+    <section class="slide" data-section="skills" data-overview="36 · 4 个 skill 怎么配合用">
       <div class="workflow">
         <div>
           <span class="eyebrow">4 个 skill · 串成一条流水线</span>
@@ -1572,7 +1693,7 @@
     </section>
 
     <!-- ==================== 28 · 自己的 skill 集合 ==================== -->
-    <section class="slide" data-section="skills" data-overview="36 · 从用 skill 到做自己的 skill">
+    <section class="slide" data-section="skills" data-overview="37 · 从用 skill 到做自己的 skill">
       <div class="own-skill">
         <div>
           <span class="eyebrow">Next Step · Personal Pipeline</span>
@@ -1618,7 +1739,7 @@
     </section>
 
     <!-- ==================== 33 · 实战案例 · 同一页面 · 不同 skill ==================== -->
-    <section class="slide" data-section="skills" data-overview="37 · 实战案例 · 同一页面，不同 skill">
+    <section class="slide" data-section="skills" data-overview="38 · 实战案例 · 同一页面，不同 skill">
       <div class="landing-showcase">
         <header class="landing-showcase__head">
           <span class="eyebrow">实战案例 · 同一个产品，4 个 skill 路径的对照</span>
@@ -1715,7 +1836,7 @@
     </section>
 
     <!-- ==================== 34 · DIVIDER · Pencil & Claude Design ==================== -->
-    <section class="slide" data-section="design" data-overview="38 · — Pencil &amp; Claude Design —">
+    <section class="slide" data-section="design" data-overview="39 · — Pencil &amp; Claude Design —">
       <div class="divider">
         <div class="divider__big-num">PD</div>
         <div class="divider__top">
@@ -1738,7 +1859,7 @@
     </section>
 
     <!-- ==================== 30 · Pencil & Claude Design 演示 ==================== -->
-    <section class="slide" data-section="design" data-overview="39 · 两个工具的位置">
+    <section class="slide" data-section="design" data-overview="40 · 两个工具的位置">
       <div class="demo-split">
         <div>
           <span class="eyebrow">Side-by-Side</span>
@@ -1780,7 +1901,7 @@
     </section>
 
     <!-- ==================== 31 · DIVIDER · Part 2 部署 ==================== -->
-    <section class="slide" data-section="deploy" data-overview="40 · — PART 2 · 部署 —">
+    <section class="slide" data-section="deploy" data-overview="41 · — PART 2 · 部署 —">
       <div class="divider">
         <div class="divider__big-num">02</div>
         <div class="divider__top">
@@ -1803,7 +1924,7 @@
     </section>
 
     <!-- ==================== 32 · Vercel 演示 ==================== -->
-    <section class="slide" data-section="deploy" data-overview="41 · Vercel · 简单看">
+    <section class="slide" data-section="deploy" data-overview="42 · Vercel · 简单看">
       <div class="deploy-section">
         <div class="deploy-section__head">
           <span class="eyebrow">Deploy 01 · Vercel</span>
@@ -1848,7 +1969,7 @@
     </section>
 
     <!-- ==================== 33 · Dokploy 演示 ==================== -->
-    <section class="slide" data-section="deploy" data-overview="42 · Dokploy · 重点">
+    <section class="slide" data-section="deploy" data-overview="43 · Dokploy · 重点">
       <div class="deploy-section">
         <div class="deploy-section__head">
           <span class="eyebrow">Deploy 02 · Dokploy</span>
@@ -1892,7 +2013,7 @@
     </section>
 
     <!-- ==================== 34 · Vercel vs Dokploy ==================== -->
-    <section class="slide" data-section="deploy" data-overview="43 · Vercel vs Dokploy">
+    <section class="slide" data-section="deploy" data-overview="44 · Vercel vs Dokploy">
       <div class="deploy-section" style="grid-template-columns: 0.8fr 1.2fr;">
         <div class="deploy-section__head">
           <span class="eyebrow">Compare · 不是替代关系</span>
@@ -1948,7 +2069,7 @@
     </section>
 
     <!-- ==================== 35 · DIVIDER · 收束 ==================== -->
-    <section class="slide" data-section="close" data-overview="44 · — 收束 —">
+    <section class="slide" data-section="close" data-overview="45 · — 收束 —">
       <div class="divider">
         <div class="divider__big-num">03</div>
         <div class="divider__top">
@@ -1971,7 +2092,7 @@
     </section>
 
     <!-- ==================== 36 · 3 件事 ==================== -->
-    <section class="slide" data-section="close" data-overview="45 · 想让大家带走的 3 件事">
+    <section class="slide" data-section="close" data-overview="46 · 想让大家带走的 3 件事">
       <div class="takeaway">
         <div>
           <span class="eyebrow">Takeaways · 3</span>
@@ -2007,7 +2128,7 @@
     </section>
 
     <!-- ==================== 37 · 答疑 ==================== -->
-    <section class="slide" data-section="close" data-overview="46 · 答疑">
+    <section class="slide" data-section="close" data-overview="47 · 答疑">
       <div class="qa qa--solo">
         <div>
           <span class="eyebrow">Q&amp;A</span>
@@ -2024,7 +2145,7 @@
     </section>
 
     <!-- ==================== 38 · END ==================== -->
-    <section class="slide" data-section="close" data-overview="47 · End · 谢谢">
+    <section class="slide" data-section="close" data-overview="48 · End · 谢谢">
       <div class="end">
         <h2 class="end__big">谢谢<span class="accent">你</span>。</h2>
         <p class="subtle" style="font-size:1.2rem;max-width:36ch;margin:0 auto;">
