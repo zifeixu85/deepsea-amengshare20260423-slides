@@ -2965,16 +2965,19 @@ body.is-overview .progress { display: none; }
     --slide-pad-top: clamp(2.6rem, 6vh, 3.6rem);
     /* clear the floating pill nav + generous breathing room + safe-area */
     --slide-pad-bottom: calc(7rem + env(safe-area-inset-bottom, 0px));
+
+    /* tighter type on mobile */
+    --text-display: clamp(2.6rem, 8vw, 4rem);
+    --text-mega: clamp(2rem, 6vw, 3rem);
+    --text-h1: clamp(1.5rem, 4.5vw, 2.2rem);
+    --text-h2: clamp(1.2rem, 3.8vw, 1.7rem);
+    --text-body: clamp(0.9rem, 3.6vw, 1rem);
   }
 
-  /* Mobile: allow tall slides to scroll so bottom content isn't clipped.
-     The slide's overflow:hidden + inset:0 was swallowing content below the fold. */
+  /* Mobile: allow tall slides to scroll so bottom content isn't clipped. */
   .slide {
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    /* sentinel spacer at the end of every slide so the last line of content
-       always sits well above the floating pill nav, even if a slide layout
-       overrides padding-bottom via grid/flex centering */
     scroll-padding-bottom: 7rem;
   }
   .slide::-webkit-scrollbar { width: 0; height: 0; }
@@ -2989,14 +2992,6 @@ body.is-overview .progress { display: none; }
   /* cover/divider slides centered: give them extra breathing room */
   .slide.cover, .slide.divider, .slide.end {
     padding-bottom: calc(8rem + env(safe-area-inset-bottom, 0px));
-  }
-
-    /* tighter type on mobile */
-    --text-display: clamp(2.6rem, 8vw, 4rem);
-    --text-mega: clamp(2rem, 6vw, 3rem);
-    --text-h1: clamp(1.5rem, 4.5vw, 2.2rem);
-    --text-h2: clamp(1.2rem, 3.8vw, 1.7rem);
-    --text-body: clamp(0.9rem, 3.6vw, 1rem);
   }
 
   /* --- chrome: compact everything, hide brand text --- */
@@ -3106,19 +3101,11 @@ body.is-overview .progress { display: none; }
   }
   .mobile-hint__sep { opacity: 0.45; }
 
-  /* --- layouts: stack most 2-col into 1-col, but keep compact L-R for intro --- */
-  .two-col, .principle__body, .skill-detail, .own-skill, .qa,
+  /* --- layouts: stack everything 2-col into 1-col (original mobile behavior) --- */
+  .two-col, .intro, .principle__body, .skill-detail, .own-skill, .qa,
   .deploy-section, .course-map, .principles-grid, .taste-grid {
     grid-template-columns: 1fr; gap: 1rem;
   }
-  /* .intro keeps small avatar on the left, text on the right — looks better than stacking */
-  .intro {
-    grid-template-columns: 96px 1fr;
-    gap: 0.9rem;
-    align-items: start;
-  }
-  .intro__avatar { max-width: 96px; }
-  .intro__name { font-size: 1.35rem; }
   .compare__pair, .demo-split__pair, .skill-matrix__grid {
     grid-template-columns: 1fr;
   }
