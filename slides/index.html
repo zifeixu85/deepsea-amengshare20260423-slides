@@ -865,106 +865,194 @@
       </div>
     </section>
 
-    <!-- ==================== 23 · impeccable 实战流程 ==================== -->
-    <section class="slide" data-section="skills" data-overview="23 · impeccable · 一次完整实战">
-      <div class="recipe">
-        <header class="recipe__head">
-          <span class="eyebrow">实战 · 从零做一个 Landing Page</span>
+    <!-- ==================== 23 · impeccable 造页面 · 哪些命令、怎么用 ==================== -->
+    <section class="slide" data-section="skills" data-overview="23 · impeccable · 造页面阶段常用命令">
+      <div class="fd-explain">
+        <header class="fd-explain__head">
+          <span class="eyebrow">造页面阶段 · 把页面先搭出来</span>
           <h2 class="title-h2" style="margin-top:0.5rem;">
-            最简工作流 · <span style="color:var(--accent);">5 步跑完</span>
+            当 <code style="color:var(--accent);">/impeccable craft</code> 不够用时，<br/>
+            你需要这些"单点工具"
           </h2>
-          <p class="subtle" style="margin-top:0.7rem;font-size:1rem;max-width:58ch;line-height:1.55;">
-            这套流程我自己用得最多。<strong style="color:var(--ink);">记住这 5 步，足以把"差不多能看"推到"真的像产品"。</strong>
+          <p class="subtle" style="margin-top:0.7rem;font-size:1rem;max-width:62ch;line-height:1.55;">
+            <code>craft</code> 是通用大招，下面这几个是<strong style="color:var(--ink);">专项命令</strong>——只动一件事、改得更可控。
           </p>
         </header>
 
-        <ol class="recipe__steps">
-          <li class="recipe-step">
-            <div class="recipe-step__pin">1</div>
-            <div class="recipe-step__body">
-              <div class="recipe-step__cmd"><code>/impeccable teach</code> <span class="recipe-step__mark">仅一次</span></div>
-              <p class="recipe-step__desc">装完 skill 后先做这步。项目配置一次写好，之后所有命令都吃这份配置。</p>
-            </div>
-          </li>
-          <li class="recipe-step">
-            <div class="recipe-step__pin">2</div>
-            <div class="recipe-step__body">
-              <div class="recipe-step__cmd"><code>/impeccable craft 想做的东西</code></div>
-              <p class="recipe-step__desc">把需求讲给它听。从这里开始它会自己想清楚、写代码、看效果。你只需要看着浏览器里的结果。</p>
-            </div>
-          </li>
-          <li class="recipe-step">
-            <div class="recipe-step__pin">3</div>
-            <div class="recipe-step__body">
-              <div class="recipe-step__cmd"><code>/critique 当前页面</code></div>
-              <p class="recipe-step__desc">页面出来了 → 让它先挑毛病。别自己硬改，让它告诉你"哪里还像 AI slop"。</p>
-            </div>
-          </li>
-          <li class="recipe-step recipe-step--branch">
-            <div class="recipe-step__pin">4</div>
-            <div class="recipe-step__body">
-              <div class="recipe-step__cmd">按评审结果<strong style="color:var(--ink);">对症下药</strong></div>
-              <ul class="recipe-branch">
-                <li><span class="recipe-branch__sym">太平</span><span>没存在感、看不到亮点</span><code>/bolder 某区域</code></li>
-                <li><span class="recipe-branch__sym">太吵</span><span>视觉疲劳、全是重点</span><code>/quieter 某区域</code></li>
-                <li><span class="recipe-branch__sym">太乱</span><span>信息堆砌、没主角</span><code>/distill 某区域</code></li>
-              </ul>
-            </div>
-          </li>
-          <li class="recipe-step">
-            <div class="recipe-step__pin">5</div>
-            <div class="recipe-step__body">
-              <div class="recipe-step__cmd"><code>/polish 整页</code> <span class="recipe-step__mark">上线前</span></div>
-              <p class="recipe-step__desc">功能对了、风格定了，最后一遍把对齐、状态、文案、动效收干净。</p>
-            </div>
-          </li>
-        </ol>
+        <div class="min-cmd-grid">
+          <article class="min-cmd">
+            <header class="min-cmd__head">
+              <code class="min-cmd__name">/shape</code>
+              <span class="min-cmd__badge">写代码前</span>
+            </header>
+            <dl class="min-cmd__dl">
+              <dt>什么时候用</dt>
+              <dd>接到一个模糊需求（"做个定价页"），还不清楚要几个档位、放哪些模块。</dd>
+              <dt>怎么用</dt>
+              <dd><code>/shape 定价页 要 3 档 面向中小团队</code> — 它会先给出信息架构和 wireframe 思路，不会直接写代码。</dd>
+            </dl>
+          </article>
+
+          <article class="min-cmd">
+            <header class="min-cmd__head">
+              <code class="min-cmd__name">/layout</code>
+              <span class="min-cmd__badge">空间节奏</span>
+            </header>
+            <dl class="min-cmd__dl">
+              <dt>什么时候用</dt>
+              <dd>页面看起来"挤"或"空"，各区块间距像在打架。</dd>
+              <dt>怎么用</dt>
+              <dd><code>/layout hero 区</code> — 它会调整间距、对齐、分组，让留白有节奏感。</dd>
+            </dl>
+          </article>
+
+          <article class="min-cmd">
+            <header class="min-cmd__head">
+              <code class="min-cmd__name">/typeset</code>
+              <span class="min-cmd__badge">字体层级</span>
+            </header>
+            <dl class="min-cmd__dl">
+              <dt>什么时候用</dt>
+              <dd>看不清层级——标题/副标题/正文一个样，读着累。</dd>
+              <dt>怎么用</dt>
+              <dd><code>/typeset 整页</code> — 建立 display/h1/h2/body 的字号对比与行距，强化阅读路径。</dd>
+            </dl>
+          </article>
+
+          <article class="min-cmd">
+            <header class="min-cmd__head">
+              <code class="min-cmd__name">/colorize</code>
+              <span class="min-cmd__badge">加策略色</span>
+            </header>
+            <dl class="min-cmd__dl">
+              <dt>什么时候用</dt>
+              <dd>灰白为主，太平、没记忆点，想加一个强调色但不知放哪。</dd>
+              <dt>怎么用</dt>
+              <dd><code>/colorize 整页 以琥珀色为主色</code> — 它会按 60-30-10 分布稀用，不是全涂一遍。</dd>
+            </dl>
+          </article>
+
+          <article class="min-cmd">
+            <header class="min-cmd__head">
+              <code class="min-cmd__name">/clarify</code>
+              <span class="min-cmd__badge">UX 文案</span>
+            </header>
+            <dl class="min-cmd__dl">
+              <dt>什么时候用</dt>
+              <dd>界面需要用户"猜"意思，或者文案在喊口号但没说清楚做什么。</dd>
+              <dt>怎么用</dt>
+              <dd><code>/clarify hero 文案</code> — 用动词开头，把"能得到什么"写清楚。</dd>
+            </dl>
+          </article>
+
+          <article class="min-cmd">
+            <header class="min-cmd__head">
+              <code class="min-cmd__name">/impeccable extract</code>
+              <span class="min-cmd__badge">沉淀 token</span>
+            </header>
+            <dl class="min-cmd__dl">
+              <dt>什么时候用</dt>
+              <dd>写了几个页面后发现颜色、间距在重复，但没落到设计 token。</dd>
+              <dt>怎么用</dt>
+              <dd><code>/impeccable extract src/</code> — 扫代码、沉淀成 CSS 变量并回写 <code>.impeccable.md</code>。</dd>
+            </dl>
+          </article>
+        </div>
       </div>
     </section>
 
-    <!-- ==================== 24 · impeccable 18 命令地图 ==================== -->
-    <section class="slide" data-section="skills" data-overview="24 · impeccable · 18 命令地图">
-      <div class="cmd-wall">
-        <div>
-          <span class="eyebrow">18 Commands · 一张地图记住所有</span>
-          <h2 class="title-h2" style="margin-top:0.5rem;">从想清楚到上线打磨，<br/>每一步都有对应命令</h2>
-        </div>
-        <div class="cmd-wall__grid">
-          <!-- foundation -->
-          <div class="cmd-tile is-foundation"><div class="cmd-tile__name">/impeccable</div><div class="cmd-tile__tag">底座 · 设计大脑</div></div>
+    <!-- ==================== 24 · impeccable 调校 + 上线 · 哪些命令、怎么用 ==================== -->
+    <section class="slide" data-section="skills" data-overview="24 · impeccable · 调校与上线阶段">
+      <div class="fd-explain">
+        <header class="fd-explain__head">
+          <span class="eyebrow">调校 + 上线阶段 · 推到"真的像产品"</span>
+          <h2 class="title-h2" style="margin-top:0.5rem;">
+            页面已经搭出来了，<br/>
+            <span style="color:var(--accent);">接下来是"调强度 + 收细节"</span>
+          </h2>
+          <p class="subtle" style="margin-top:0.7rem;font-size:1rem;max-width:62ch;line-height:1.55;">
+            这批命令<strong style="color:var(--ink);">不负责"造"，只负责"调"和"检"</strong>。能让同一版设计多走一里路。
+          </p>
+        </header>
 
-          <!-- thinking -->
-          <div class="cmd-tile"><div class="cmd-tile__name">/shape</div><div class="cmd-tile__tag">写代码前先想清楚</div></div>
-          <div class="cmd-tile"><div class="cmd-tile__name">/impeccable craft</div><div class="cmd-tile__tag">shape + 实现 + 视觉迭代</div></div>
-          <div class="cmd-tile"><div class="cmd-tile__name">/impeccable teach</div><div class="cmd-tile__tag">项目级风格初始化</div></div>
-          <div class="cmd-tile"><div class="cmd-tile__name">/impeccable extract</div><div class="cmd-tile__tag">把代码里重复模式沉成 token</div></div>
+        <div class="min-cmd-grid">
+          <article class="min-cmd">
+            <header class="min-cmd__head">
+              <code class="min-cmd__name">/distill</code>
+              <span class="min-cmd__badge">删到骨头</span>
+            </header>
+            <dl class="min-cmd__dl">
+              <dt>什么时候用</dt>
+              <dd>信息堆在一起没主角；视觉/文案都想删但不知道删哪个。</dd>
+              <dt>怎么用</dt>
+              <dd><code>/distill hero 区</code> — 删装饰元素、合并重复信息，保留最关键那一条。</dd>
+            </dl>
+          </article>
 
-          <!-- craft / layout -->
-          <div class="cmd-tile"><div class="cmd-tile__name">/layout</div><div class="cmd-tile__tag">空间、节奏、留白</div></div>
-          <div class="cmd-tile"><div class="cmd-tile__name">/arrange</div><div class="cmd-tile__tag">布局重排</div></div>
-          <div class="cmd-tile"><div class="cmd-tile__name">/typeset</div><div class="cmd-tile__tag">字体层级与可读性</div></div>
-          <div class="cmd-tile"><div class="cmd-tile__name">/colorize</div><div class="cmd-tile__tag">给灰白界面加策略色</div></div>
-          <div class="cmd-tile"><div class="cmd-tile__name">/clarify</div><div class="cmd-tile__tag">改 UX 文案让界面自解释</div></div>
+          <article class="min-cmd">
+            <header class="min-cmd__head">
+              <code class="min-cmd__name">/animate</code>
+              <span class="min-cmd__badge">有目的动效</span>
+            </header>
+            <dl class="min-cmd__dl">
+              <dt>什么时候用</dt>
+              <dd>页面没"活"气；或者动效太多、太装饰。</dd>
+              <dt>怎么用</dt>
+              <dd><code>/animate hero 入场</code> — 只对关键信息加淡入和位移，不做无意义装饰。</dd>
+            </dl>
+          </article>
 
-          <!-- balance -->
-          <div class="cmd-tile"><div class="cmd-tile__name">/bolder</div><div class="cmd-tile__tag">把"安全"推到"有存在感"</div></div>
-          <div class="cmd-tile"><div class="cmd-tile__name">/quieter</div><div class="cmd-tile__tag">把"喧闹"拉回"克制"</div></div>
-          <div class="cmd-tile"><div class="cmd-tile__name">/distill</div><div class="cmd-tile__tag">删到只剩骨头</div></div>
-          <div class="cmd-tile"><div class="cmd-tile__name">/animate</div><div class="cmd-tile__tag">有目的的动效</div></div>
-          <div class="cmd-tile"><div class="cmd-tile__name">/delight</div><div class="cmd-tile__tag">最后那一点小心思</div></div>
+          <article class="min-cmd">
+            <header class="min-cmd__head">
+              <code class="min-cmd__name">/harden</code>
+              <span class="min-cmd__badge">真实数据</span>
+            </header>
+            <dl class="min-cmd__dl">
+              <dt>什么时候用</dt>
+              <dd>本地漂亮，一接真实数据就崩——超长字符串、空列表、错误状态全没考虑。</dd>
+              <dt>怎么用</dt>
+              <dd><code>/harden 订单列表</code> — 补空状态 / loading / error / 极端数据的样式。</dd>
+            </dl>
+          </article>
 
-          <!-- quality -->
-          <div class="cmd-tile"><div class="cmd-tile__name">/critique</div><div class="cmd-tile__tag">设计评审 + 反模式扫描</div></div>
-          <div class="cmd-tile"><div class="cmd-tile__name">/audit</div><div class="cmd-tile__tag">技术体检 P0-P3</div></div>
-          <div class="cmd-tile"><div class="cmd-tile__name">/polish</div><div class="cmd-tile__tag">上线前最后一遍</div></div>
+          <article class="min-cmd">
+            <header class="min-cmd__head">
+              <code class="min-cmd__name">/optimize</code>
+              <span class="min-cmd__badge">性能</span>
+            </header>
+            <dl class="min-cmd__dl">
+              <dt>什么时候用</dt>
+              <dd>Lighthouse 分数低；首屏慢、交互卡。</dd>
+              <dt>怎么用</dt>
+              <dd><code>/optimize 首页</code> — 给出 LCP / INP / 包大小的可改项和优先级。</dd>
+            </dl>
+          </article>
 
-          <!-- production -->
-          <div class="cmd-tile"><div class="cmd-tile__name">/normalize</div><div class="cmd-tile__tag">拉回设计系统</div></div>
-          <div class="cmd-tile"><div class="cmd-tile__name">/harden</div><div class="cmd-tile__tag">真实数据 / 边界情况</div></div>
-          <div class="cmd-tile"><div class="cmd-tile__name">/optimize</div><div class="cmd-tile__tag">性能 LCP / INP / 包大小</div></div>
-          <div class="cmd-tile"><div class="cmd-tile__name">/adapt</div><div class="cmd-tile__tag">移动 / 邮件 / 嵌入适配</div></div>
-          <div class="cmd-tile"><div class="cmd-tile__name">/onboard</div><div class="cmd-tile__tag">空状态 / 首次启动</div></div>
-          <div class="cmd-tile"><div class="cmd-tile__name">/overdrive</div><div class="cmd-tile__tag">上限拉满 · 谨慎使用 ⚡</div></div>
+          <article class="min-cmd">
+            <header class="min-cmd__head">
+              <code class="min-cmd__name">/adapt</code>
+              <span class="min-cmd__badge">多端适配</span>
+            </header>
+            <dl class="min-cmd__dl">
+              <dt>什么时候用</dt>
+              <dd>桌面好看，手机塌；或要把同一设计适配到邮件 / 嵌入 / 小屏。</dd>
+              <dt>怎么用</dt>
+              <dd><code>/adapt 移动端</code> — 不是缩桌面，是为窄屏重新布局并确保触达。</dd>
+            </dl>
+          </article>
+
+          <article class="min-cmd">
+            <header class="min-cmd__head">
+              <code class="min-cmd__name">/normalize</code>
+              <span class="min-cmd__badge">拉回体系</span>
+            </header>
+            <dl class="min-cmd__dl">
+              <dt>什么时候用</dt>
+              <dd>页面跟设计系统走偏了——颜色 / 间距 / 圆角都在"凭感觉"。</dd>
+              <dt>怎么用</dt>
+              <dd><code>/normalize 整页</code> — 把 hard-coded 值替换成 token，让页面回到体系里。</dd>
+            </dl>
+          </article>
         </div>
       </div>
     </section>
