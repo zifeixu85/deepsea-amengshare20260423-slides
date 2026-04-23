@@ -337,10 +337,9 @@ body::before {
   cursor: pointer;
   display: inline-flex; align-items: center; gap: 6px;
   font-size: 0.7rem; line-height: 1;
-  font-family: var(--font-mono);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  font-weight: 600;
+  font-family: var(--font-sans);
+  letter-spacing: 0.02em;
+  font-weight: 500;
   transition: background 200ms var(--ease), color 200ms var(--ease), border-color 200ms var(--ease);
   pointer-events: auto;
   backdrop-filter: blur(6px);
