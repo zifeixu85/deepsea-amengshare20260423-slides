@@ -45,7 +45,7 @@
   <main class="deck" id="deck" data-section="open">
 
     <!-- ==================== 01 · COVER ==================== -->
-    <section class="slide cover is-active" data-section="open" data-overview="01 · 封面">
+    <section class="slide cover is-active" data-section="open" data-overview="1 · 封面">
       <header class="cover__top">
         <div><span class="dot-pulse"></span><strong>LIVE</strong> · 技术分享 · Vol.01</div>
         <div>2026.04.23</div>
@@ -80,7 +80,7 @@
     </section>
 
     <!-- ==================== 02 · 自我介绍 ==================== -->
-    <section class="slide" data-section="open" data-overview="02 · 自我介绍">
+    <section class="slide" data-section="open" data-overview="2 · 自我介绍">
       <div class="intro">
         <div class="intro__avatar">
           <img src="./avatar.png" alt="A梦 头像" />
@@ -128,7 +128,7 @@
     </section>
 
     <!-- ==================== 03 · 今天想分享什么 ==================== -->
-    <section class="slide" data-section="open" data-overview="03 · 今天想分享什么">
+    <section class="slide" data-section="open" data-overview="3 · 今天想分享什么">
       <div class="question">
         <span class="question__pre">// today's topic</span>
         <h2 class="question__big">
@@ -157,7 +157,7 @@
     </section>
 
     <!-- ==================== 04 · 课程地图回顾 ==================== -->
-    <section class="slide" data-section="open" data-overview="04 · 课程地图回顾">
+    <section class="slide" data-section="open" data-overview="4 · 课程地图回顾">
       <div class="course-map">
         <div>
           <span class="eyebrow">Recap · 课程地图</span>
@@ -199,7 +199,7 @@
     </section>
 
     <!-- ==================== 05 · 今天结构预览 ==================== -->
-    <section class="slide" data-section="open" data-overview="05 · 今天结构预览">
+    <section class="slide" data-section="open" data-overview="5 · 今天结构预览">
       <div class="roadmap">
         <div>
           <span class="eyebrow">Today's Map</span>
@@ -242,7 +242,7 @@
     </section>
 
     <!-- ==================== 06 · DIVIDER · Part 1 调试 ==================== -->
-    <section class="slide" data-section="debug" data-overview="06 · — PART 1 · 调试 —">
+    <section class="slide" data-section="debug" data-overview="6 · — PART 1 · 调试 —">
       <div class="divider">
         <div class="divider__big-num">01</div>
         <div class="divider__top">
@@ -265,7 +265,7 @@
     </section>
 
     <!-- ==================== 07 · 调试核心问题 ==================== -->
-    <section class="slide" data-section="debug" data-overview="07 · 调试的核心问题">
+    <section class="slide" data-section="debug" data-overview="7 · 调试的核心问题">
       <div class="question">
         <span class="question__pre">// the real question</span>
         <h2 class="question__big">
@@ -280,7 +280,7 @@
     </section>
 
     <!-- ==================== 08 · 6 原则一览 ==================== -->
-    <section class="slide" data-section="debug" data-overview="08 · 6 条核心设计原则">
+    <section class="slide" data-section="debug" data-overview="8 · 6 条核心设计原则">
       <div class="principles-grid">
         <div class="principles-grid__head">
           <span class="eyebrow">Principles · 06</span>
@@ -299,7 +299,7 @@
     </section>
 
     <!-- ==================== 09 · 原则 1 ==================== -->
-    <section class="slide" data-section="debug" data-overview="09 · 原则 1 · 看懂 > 高级">
+    <section class="slide" data-section="debug" data-overview="9 · 原则 1 · 看懂 > 高级">
       <div class="principle">
         <div class="principle__num">01</div>
         <div class="principle__head">
@@ -1349,8 +1349,113 @@
       </div>
     </section>
 
-    <!-- ==================== 27 · web-design-guidelines 一句话 ==================== -->
-    <section class="slide" data-section="skills" data-overview="31 · web-design-guidelines · 一句话带过">
+    <!-- ==================== 31 · taste-skill · 三个旋钮各做什么 ==================== -->
+    <section class="slide" data-section="skills" data-overview="31 · taste-skill · 8 / 6 / 4 分别是什么样">
+      <div class="fd-explain">
+        <header class="fd-explain__head">
+          <span class="eyebrow">看懂 8 / 6 / 4 · 三个旋钮各调一件事</span>
+          <h2 class="title-h2" style="margin-top:0.5rem;">
+            数字不是打分，<br/>
+            <span style="color:var(--accent);">是 3 个独立风格档位</span>
+          </h2>
+          <p class="subtle" style="margin-top:0.7rem;font-size:1rem;max-width:62ch;line-height:1.55;">
+            每个旋钮从 1 到 10。默认 <strong style="color:var(--ink);">8 / 6 / 4</strong> 意思是：多变度偏高、动效中等、密度略松。
+          </p>
+        </header>
+
+        <div class="dial-compare">
+          <!-- dial 1: variance -->
+          <section class="dial-row">
+            <header class="dial-row__head">
+              <span class="dial-row__name">界面多变度</span>
+              <span class="dial-row__hint">页面布局规整还是打破栅格</span>
+            </header>
+            <div class="dial-row__cells">
+              <div class="dial-cell"><span class="dial-cell__v">2</span><span class="dial-cell__label">规整</span><p>居中 Hero、三列等距卡片、左右对称</p></div>
+              <div class="dial-cell dial-cell--mid"><span class="dial-cell__v">8</span><span class="dial-cell__label">默认</span><p>非对称 split、Bento 不等宽、打破一次栅格</p></div>
+              <div class="dial-cell"><span class="dial-cell__v">10</span><span class="dial-cell__label">艺术混乱</span><p>手写编辑感、重叠贴纸、旋转元素</p></div>
+            </div>
+          </section>
+
+          <!-- dial 2: motion -->
+          <section class="dial-row">
+            <header class="dial-row__head">
+              <span class="dial-row__name">动效强度</span>
+              <span class="dial-row__hint">页面静不静、有没有动</span>
+            </header>
+            <div class="dial-row__cells">
+              <div class="dial-cell"><span class="dial-cell__v">2</span><span class="dial-cell__label">静态</span><p>几乎没有动画；只有 hover 色变</p></div>
+              <div class="dial-cell dial-cell--mid"><span class="dial-cell__v">6</span><span class="dial-cell__label">默认</span><p>滚动触发淡入 + 错位入场 + 平滑过渡</p></div>
+              <div class="dial-cell"><span class="dial-cell__v">9</span><span class="dial-cell__label">电影级</span><p>视差滚动、stagger 序列、可能让人晕</p></div>
+            </div>
+          </section>
+
+          <!-- dial 3: density -->
+          <section class="dial-row">
+            <header class="dial-row__head">
+              <span class="dial-row__name">内容密度</span>
+              <span class="dial-row__hint">信息疏松还是密集</span>
+            </header>
+            <div class="dial-row__cells">
+              <div class="dial-cell"><span class="dial-cell__v">2</span><span class="dial-cell__label">画廊</span><p>一屏 1-2 件事；留白大、呼吸感强</p></div>
+              <div class="dial-cell dial-cell--mid"><span class="dial-cell__v">4</span><span class="dial-cell__label">默认</span><p>常规间距；一屏 3-4 个信息块</p></div>
+              <div class="dial-cell"><span class="dial-cell__v">9</span><span class="dial-cell__label">驾驶舱</span><p>高信息密度；适合后台、数据仪表盘</p></div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 32 · taste-skill · 一次真实对话 ==================== -->
+    <section class="slide" data-section="skills" data-overview="32 · taste-skill · 一次真实对话">
+      <div class="skill-detail">
+        <div class="skill-detail__head">
+          <span class="skill-detail__id">真实怎么用 · 看一次完整对话</span>
+          <h2 class="skill-detail__title">挂哪个子 skill<br/>+ 要哪组旋钮<br/>说清楚就行</h2>
+          <p class="skill-detail__role">整个过程<strong>不用改任何文件</strong>——在聊天里说人话，AI 读配置写代码。</p>
+          <ul class="skill-detail__points">
+            <li><strong>① 选风格</strong>：项目调性更像 Apple 就挂 <code class="cmd">soft-skill</code>；像 Notion 就 <code class="cmd">minimalist-skill</code>。挂一个就够。</li>
+            <li><strong>② 说数字</strong>：用中文说"多变度 7 / 动效 5 / 密度 4"，AI 自己映射到参数。</li>
+            <li><strong>③ 边看边调</strong>：页面出来不满意，直接"动效拉到 8"就行。</li>
+          </ul>
+        </div>
+        <div class="skill-detail__right">
+          <div class="terminal">
+            <span class="comment"># 第一句，开工</span><br/>
+            <span class="prompt">›</span> <span class="cmd-text">/taste-skill 做 SaaS 定价页，主打数据分析团队</span><br/>
+            <span class="cmd-text">挂 soft-skill，多变度 7，动效 5，密度 4</span><br/>
+            <br/>
+            <span class="comment"># AI 先 echo 它理解的配置</span><br/>
+            → 风格：<span class="ok">soft-skill</span>（高端 SaaS 范）<br/>
+            → 多变度 = 7（非对称 split hero）<br/>
+            → 动效 = 5（滚动淡入 + 错位）<br/>
+            → 密度 = 4（常规间距）<br/>
+            → 开始实现...<br/>
+            <br/>
+            <span class="comment"># 看到结果后微调</span><br/>
+            <span class="prompt">›</span> <span class="cmd-text">hero 太安静了，动效拉到 8</span><br/>
+            → 重写 hero 入场：<br/>
+            &nbsp;&nbsp;stagger 0.08s，<br/>
+            &nbsp;&nbsp;文字逐行浮现，<br/>
+            &nbsp;&nbsp;背景视差跟随滚动<br/>
+            <br/>
+            <span class="prompt">›</span> <span class="cmd-text">还是太晃，降回 6</span><br/>
+            → 降到温和版动效
+          </div>
+          <div class="card">
+            <p class="card__title" style="font-family:var(--font-serif);font-weight:600;line-height:1.35;">
+              记住一句话：<br/>
+              "挂一个 <span style="color:var(--accent);">子 skill</span>，<br/>
+              给三个 <span style="color:var(--accent);">数字</span>，<br/>
+              剩下让 AI 来"。
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 33 · web-design-guidelines 一句话 ==================== -->
+    <section class="slide" data-section="skills" data-overview="33 · web-design-guidelines · 一句话带过">
       <div class="skill-detail">
         <div class="skill-detail__head">
           <span class="skill-detail__id">Skill 04 · by Vercel</span>
@@ -1383,7 +1488,7 @@
     </section>
 
     <!-- ==================== 27 · 4 个 skill 工作流 ==================== -->
-    <section class="slide" data-section="skills" data-overview="32 · 4 个 skill 怎么配合用">
+    <section class="slide" data-section="skills" data-overview="34 · 4 个 skill 怎么配合用">
       <div class="workflow">
         <div>
           <span class="eyebrow">Workflow · 4 skills · 1 pipeline</span>
@@ -1423,7 +1528,7 @@
     </section>
 
     <!-- ==================== 28 · 自己的 skill 集合 ==================== -->
-    <section class="slide" data-section="skills" data-overview="33 · 从用 skill 到做自己的 skill">
+    <section class="slide" data-section="skills" data-overview="35 · 从用 skill 到做自己的 skill">
       <div class="own-skill">
         <div>
           <span class="eyebrow">Next Step · Personal Pipeline</span>
@@ -1469,7 +1574,7 @@
     </section>
 
     <!-- ==================== 33 · 实战案例 · 同一页面 · 不同 skill ==================== -->
-    <section class="slide" data-section="skills" data-overview="34 · 实战案例 · 同一页面，不同 skill">
+    <section class="slide" data-section="skills" data-overview="36 · 实战案例 · 同一页面，不同 skill">
       <div class="landing-showcase">
         <header class="landing-showcase__head">
           <span class="eyebrow">实战案例 · 同一个产品，4 个 skill 路径的对照</span>
@@ -1566,7 +1671,7 @@
     </section>
 
     <!-- ==================== 34 · DIVIDER · Pencil & Claude Design ==================== -->
-    <section class="slide" data-section="design" data-overview="35 · — Pencil &amp; Claude Design —">
+    <section class="slide" data-section="design" data-overview="37 · — Pencil &amp; Claude Design —">
       <div class="divider">
         <div class="divider__big-num">PD</div>
         <div class="divider__top">
@@ -1589,7 +1694,7 @@
     </section>
 
     <!-- ==================== 30 · Pencil & Claude Design 演示 ==================== -->
-    <section class="slide" data-section="design" data-overview="36 · 两个工具的位置">
+    <section class="slide" data-section="design" data-overview="38 · 两个工具的位置">
       <div class="demo-split">
         <div>
           <span class="eyebrow">Side-by-Side</span>
@@ -1631,7 +1736,7 @@
     </section>
 
     <!-- ==================== 31 · DIVIDER · Part 2 部署 ==================== -->
-    <section class="slide" data-section="deploy" data-overview="37 · — PART 2 · 部署 —">
+    <section class="slide" data-section="deploy" data-overview="39 · — PART 2 · 部署 —">
       <div class="divider">
         <div class="divider__big-num">02</div>
         <div class="divider__top">
@@ -1654,7 +1759,7 @@
     </section>
 
     <!-- ==================== 32 · Vercel 演示 ==================== -->
-    <section class="slide" data-section="deploy" data-overview="38 · Vercel · 简单看">
+    <section class="slide" data-section="deploy" data-overview="40 · Vercel · 简单看">
       <div class="deploy-section">
         <div class="deploy-section__head">
           <span class="eyebrow">Deploy 01 · Vercel</span>
@@ -1699,7 +1804,7 @@
     </section>
 
     <!-- ==================== 33 · Dokploy 演示 ==================== -->
-    <section class="slide" data-section="deploy" data-overview="39 · Dokploy · 重点">
+    <section class="slide" data-section="deploy" data-overview="41 · Dokploy · 重点">
       <div class="deploy-section">
         <div class="deploy-section__head">
           <span class="eyebrow">Deploy 02 · Dokploy</span>
@@ -1743,7 +1848,7 @@
     </section>
 
     <!-- ==================== 34 · Vercel vs Dokploy ==================== -->
-    <section class="slide" data-section="deploy" data-overview="40 · Vercel vs Dokploy">
+    <section class="slide" data-section="deploy" data-overview="42 · Vercel vs Dokploy">
       <div class="deploy-section" style="grid-template-columns: 0.8fr 1.2fr;">
         <div class="deploy-section__head">
           <span class="eyebrow">Compare · 不是替代关系</span>
@@ -1799,7 +1904,7 @@
     </section>
 
     <!-- ==================== 35 · DIVIDER · 收束 ==================== -->
-    <section class="slide" data-section="close" data-overview="41 · — 收束 —">
+    <section class="slide" data-section="close" data-overview="43 · — 收束 —">
       <div class="divider">
         <div class="divider__big-num">03</div>
         <div class="divider__top">
@@ -1822,7 +1927,7 @@
     </section>
 
     <!-- ==================== 36 · 3 件事 ==================== -->
-    <section class="slide" data-section="close" data-overview="42 · 想让大家带走的 3 件事">
+    <section class="slide" data-section="close" data-overview="44 · 想让大家带走的 3 件事">
       <div class="takeaway">
         <div>
           <span class="eyebrow">Takeaways · 3</span>
@@ -1858,7 +1963,7 @@
     </section>
 
     <!-- ==================== 37 · 答疑 ==================== -->
-    <section class="slide" data-section="close" data-overview="43 · 答疑">
+    <section class="slide" data-section="close" data-overview="45 · 答疑">
       <div class="qa qa--solo">
         <div>
           <span class="eyebrow">Q&amp;A</span>
@@ -1875,7 +1980,7 @@
     </section>
 
     <!-- ==================== 38 · END ==================== -->
-    <section class="slide" data-section="close" data-overview="44 · End · 谢谢">
+    <section class="slide" data-section="close" data-overview="46 · End · 谢谢">
       <div class="end">
         <h2 class="end__big">谢谢<span class="accent">你</span>。</h2>
         <p class="subtle" style="font-size:1.2rem;max-width:36ch;margin:0 auto;">
