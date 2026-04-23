@@ -6,6 +6,12 @@
 
 ---
 
+## 🔗 在线访问
+
+**推荐直接访问**：https://zifeixu85.github.io/deepsea-amengshare20260423-slides/
+
+---
+
 ## 🎯 快速访问
 
 - [**打开 Slides（推荐）**](./slides/) — 全部 43 张幻灯片
