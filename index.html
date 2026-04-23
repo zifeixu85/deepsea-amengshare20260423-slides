@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>从 Demo 到正式产品 · A梦</title>
+  <meta name="description" content="从 Demo 到正式产品——部署与调试实战。分享人：A梦。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@500;700;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: oklch(13% 0.012 260);
+      --bg-card: oklch(20% 0.018 260);
+      --ink: oklch(96% 0.005 260);
+      --ink-dim: oklch(72% 0.018 260);
+      --ink-mute: oklch(52% 0.02 260);
+      --accent: oklch(78% 0.16 75);
+      --line: oklch(28% 0.02 260);
+      --font-sans: 'Inter', -apple-system, 'PingFang SC', sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, Menlo, monospace;
+      --font-serif: 'Noto Serif SC', 'Songti SC', serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; background: var(--bg); color: var(--ink); font-family: var(--font-sans); }
+    body {
+      display: grid; place-content: center;
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      pointer-events: none;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.05 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+      opacity: 0.45; mix-blend-mode: overlay;
+    }
+    .wrap { max-width: 800px; text-align: center; position: relative; z-index: 1; }
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      color: var(--accent);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      display: inline-flex; align-items: center; gap: 10px;
+    }
+    .eyebrow::before, .eyebrow::after {
+      content: ''; width: 28px; height: 1px; background: currentColor; opacity: 0.6;
+    }
+    h1 {
+      font-family: var(--font-serif);
+      font-weight: 800;
+      font-size: clamp(2.4rem, 1rem + 5vw, 5rem);
+      line-height: 1;
+      letter-spacing: -0.02em;
+      margin-bottom: 16px;
+    }
+    h1 .accent { color: var(--accent); }
+    .sub {
+      font-size: 1.15rem;
+      color: var(--ink-dim);
+      margin-bottom: 48px;
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+    }
+    .card {
+      display: block;
+      padding: 24px 28px;
+      background: var(--bg-card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      text-decoration: none;
+      color: var(--ink);
+      transition: border-color 200ms, transform 200ms;
+      text-align: left;
+    }
+    .card:hover { border-color: var(--accent); transform: translateY(-2px); }
+    .card h3 { font-family: var(--font-serif); font-size: 1.4rem; font-weight: 700; margin-bottom: 8px; }
+    .card p { color: var(--ink-dim); font-size: 0.95rem; line-height: 1.5; }
+    .card .arrow { color: var(--accent); margin-top: 12px; font-family: var(--font-mono); font-size: 0.82rem; }
+    .meta {
+      margin-top: 60px;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--ink-mute);
+      letter-spacing: 0.1em;
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <span class="eyebrow">LIVE · 技术分享 · Vol.01</span>
+    <h1>
+      从 <span class="accent">Demo</span> 到<br/>
+      <span class="accent">正式产品</span>
+    </h1>
+    <p class="sub">部署与调试实战 · A梦 · 2026.04.23</p>
+
+    <div class="cards">
+      <a class="card" href="./slides/">
+        <h3>打开 Slides →</h3>
+        <p>完整分享内容，43 张幻灯片。键盘 <code>←</code>/<code>→</code> 翻页，<code>O</code> 开启概览，<code>T</code> 切换明暗。</p>
+        <span class="arrow">/slides/ ↗</span>
+      </a>
+      <a class="card" href="./landing/">
+        <h3>看 Landing 案例 →</h3>
+        <p>配套 Demo Landing Page 的三个版本对比。按键盘 <code>1</code>/<code>2</code>/<code>3</code> 切换。</p>
+        <span class="arrow">/landing/ ↗</span>
+      </a>
+    </div>
+
+    <p class="meta">A梦 · 2026</p>
+  </main>
+</body>
+</html>

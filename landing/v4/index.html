@@ -1,0 +1,1059 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DeploySea — 把 Demo 推上线，一条命令走完</title>
+  <meta name="description" content="DeploySea 把从本地 Demo 到线上正式运行之间的所有琐事接走：环境、证书、监控、回滚、多区域分发，不用平台团队也能稳稳发版。" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    /* =========================================================
+       v4 — taste-skill profile
+       DESIGN_VARIANCE: 8   MOTION_INTENSITY: 6   VISUAL_DENSITY: 4
+       Palette:  zinc-50 bg · white cards · zinc-900 ink · emerald accent
+       ========================================================= */
+    :root {
+      --bg:          #f9fafb;
+      --card:        #fdfdfe;
+      --card-alt:    #fcfcfd;
+      --ink:         #18181b;
+      --ink-mid:     #52525b;
+      --ink-soft:    #a1a1aa;
+      --rule:        rgba(228, 228, 231, 0.7);
+      --rule-strong: rgba(161, 161, 170, 0.28);
+
+      --accent:      #059669;
+      --accent-deep: #047857;
+      --accent-tint: rgba(5, 150, 105, 0.08);
+      --accent-ring: rgba(5, 150, 105, 0.22);
+
+      --ink-dark:    #0a0a0a;
+
+      --r-xl: 40px;
+      --r-lg: 24px;
+      --r-md: 14px;
+      --r-sm: 8px;
+
+      --shadow-diffuse: 0 20px 40px -15px rgba(17, 24, 39, 0.06), 0 4px 12px -8px rgba(17, 24, 39, 0.05);
+      --shadow-card:    0 1px 2px rgba(17, 24, 39, 0.04);
+      --shadow-pop:     0 32px 60px -20px rgba(17, 24, 39, 0.12), 0 12px 24px -16px rgba(5, 150, 105, 0.15);
+
+      --f-sans: 'Geist', ui-sans-serif, system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      --f-mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+      --page: 1280px;
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--f-sans);
+      font-size: 16px; line-height: 1.55;
+      color: var(--ink);
+      background: var(--bg);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+      font-feature-settings: 'cv11', 'ss01';
+    }
+    img, svg { display: block; max-width: 100%; }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; cursor: pointer; border: 0; background: transparent; }
+    h1, h2, h3, h4, p, ul, ol { margin: 0; padding: 0; }
+    ul, ol { list-style: none; }
+    ::selection { background: var(--accent); color: #fafafa; }
+
+    .page { max-width: var(--page); margin: 0 auto; padding: 0 clamp(16px, 3vw, 40px); }
+
+    .bg-mesh {
+      position: fixed; inset: 0; z-index: -1; pointer-events: none;
+      background:
+        radial-gradient(900px 600px at 88% 8%, rgba(5, 150, 105, 0.06), transparent 70%),
+        radial-gradient(1100px 700px at 8% 92%, rgba(24, 24, 27, 0.04), transparent 60%);
+    }
+
+    /* ===== TOPBAR ===== */
+    .topbar { padding: clamp(18px, 2.4vw, 28px) 0; }
+    .topbar__row { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+    .brand {
+      display: inline-flex; align-items: center; gap: 10px;
+      font-weight: 700; font-size: 18px; letter-spacing: -0.015em;
+    }
+    .brand__mark { width: 22px; height: 22px; flex-shrink: 0; }
+    .nav { display: flex; gap: 32px; font-size: 14px; color: var(--ink-mid); font-weight: 500; }
+    .nav a { padding: 4px 0; transition: color 200ms var(--ease); }
+    .nav a:hover { color: var(--ink); }
+    .topbar__cta { display: flex; gap: 10px; align-items: center; }
+
+    /* ===== BUTTONS ===== */
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 18px; border-radius: 999px;
+      font-size: 14px; font-weight: 500; letter-spacing: -0.005em;
+      border: 1px solid transparent;
+      transition: all 200ms var(--ease);
+      white-space: nowrap; will-change: transform;
+    }
+    .btn:active { transform: translateY(1px) scale(0.98); }
+    .btn--ink {
+      background: var(--ink); color: var(--bg);
+      box-shadow: 0 1px 0 rgba(255,255,255,0.1) inset, 0 6px 16px -8px rgba(17, 24, 39, 0.3);
+    }
+    .btn--ink:hover { background: #050505; transform: translateY(-1px); }
+    .btn--accent {
+      background: var(--accent); color: #fafafa;
+      box-shadow: 0 1px 0 rgba(255,255,255,0.2) inset, 0 12px 28px -12px var(--accent-ring);
+    }
+    .btn--accent:hover { background: var(--accent-deep); transform: translateY(-1px); }
+    .btn--ghost {
+      border-color: var(--rule-strong); color: var(--ink); background: var(--card);
+    }
+    .btn--ghost:hover { border-color: var(--ink); transform: translateY(-1px); }
+    .btn--text { padding: 6px 2px; color: var(--ink); font-weight: 500; }
+    .btn--text::after {
+      content: ''; display: inline-block;
+      width: 14px; height: 14px; margin-left: 4px;
+      background: currentColor;
+      mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round'><path d='M5 12h14M13 6l6 6-6 6'/></svg>") no-repeat center / contain;
+      transition: transform 200ms var(--ease);
+    }
+    .btn--text:hover { color: var(--accent); }
+    .btn--text:hover::after { transform: translateX(4px); }
+    .btn--lg { padding: 13px 22px; font-size: 15px; }
+
+    /* ===== HERO — asymmetric split ===== */
+    .hero {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: clamp(24px, 5vw, 80px);
+      align-items: center;
+      padding: clamp(40px, 6vw, 96px) 0 clamp(56px, 7vw, 120px);
+      min-height: 76vh;
+    }
+    .hero__copy { max-width: 56ch; }
+
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 6px 12px 6px 8px;
+      border: 1px solid var(--rule);
+      border-radius: 999px;
+      background: var(--card);
+      font-family: var(--f-mono);
+      font-size: 12px; letter-spacing: 0.01em;
+      color: var(--ink-mid);
+      box-shadow: var(--shadow-card);
+    }
+    .eyebrow__dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-ring);
+    }
+
+    .hero h1 {
+      font-size: clamp(40px, 4.8vw, 60px);
+      font-weight: 600;
+      letter-spacing: -0.035em;
+      line-height: 1;
+      margin-top: 24px;
+      color: var(--ink);
+    }
+    .hero h1 .muted { color: var(--ink-mid); font-weight: 500; }
+    .hero h1 .accent { color: var(--accent); }
+
+    .hero__sub { margin-top: 24px; font-size: 17px; line-height: 1.55; color: var(--ink-mid); max-width: 52ch; }
+    .hero__actions { display: flex; gap: 12px; align-items: center; margin-top: 32px; flex-wrap: wrap; }
+
+    .hero__trust {
+      display: flex; align-items: center; gap: 18px;
+      margin-top: 44px; padding-top: 24px;
+      border-top: 1px solid var(--rule);
+      flex-wrap: wrap;
+    }
+    .hero__trust__label { font-family: var(--f-mono); font-size: 11.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); }
+    .hero__trust__count { font-family: var(--f-mono); font-variant-numeric: tabular-nums; color: var(--ink); font-weight: 500; }
+    .hero__trust__logos { display: flex; gap: 18px; color: var(--ink-soft); font-weight: 600; font-size: 13px; letter-spacing: 0.03em; }
+
+    /* Hero visual — dashboard mock */
+    .hero__visual { position: relative; aspect-ratio: 1 / 1; max-height: 620px; }
+    .panel {
+      position: absolute;
+      background: var(--card);
+      border: 1px solid var(--rule);
+      border-radius: var(--r-xl);
+      box-shadow: var(--shadow-diffuse);
+      overflow: hidden;
+    }
+    .panel--main { inset: 0; padding: 24px; display: flex; flex-direction: column; }
+    .panel__head {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; padding-bottom: 16px;
+      border-bottom: 1px solid var(--rule);
+    }
+    .panel__title { display: flex; align-items: center; gap: 10px; font-family: var(--f-mono); font-size: 12.5px; color: var(--ink-mid); }
+    .panel__title .proj { color: var(--ink); font-weight: 500; }
+    .panel__title .tick {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-ring);
+      animation: pulse 1.8s ease-in-out infinite;
+    }
+    .panel__meta { font-family: var(--f-mono); font-size: 11px; color: var(--ink-soft); }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 3px var(--accent-ring); }
+      50%      { box-shadow: 0 0 0 7px rgba(5, 150, 105, 0.08); }
+    }
+
+    .pipeline { display: flex; flex-direction: column; gap: 8px; padding-top: 18px; flex: 1; }
+    .pipeline__step {
+      display: grid;
+      grid-template-columns: 28px 1fr auto;
+      gap: 12px; align-items: center;
+      padding: 12px 14px;
+      border-radius: var(--r-md);
+      border: 1px solid transparent;
+      transition: background 200ms var(--ease);
+    }
+    .pipeline__step.is-done { background: rgba(5, 150, 105, 0.04); }
+    .pipeline__step.is-active { background: var(--accent-tint); border-color: var(--accent-ring); }
+    .pipeline__step .dot {
+      width: 20px; height: 20px; border-radius: 50%;
+      display: grid; place-items: center;
+      border: 1px solid var(--rule-strong);
+      background: var(--card);
+      color: var(--ink-soft);
+    }
+    .pipeline__step.is-done .dot { border-color: var(--accent); background: var(--accent); color: #fafafa; }
+    .pipeline__step.is-active .dot { border-color: var(--accent); background: var(--card); color: var(--accent); position: relative; }
+    .pipeline__step.is-active .dot::after {
+      content: ''; position: absolute; inset: -5px;
+      border-radius: 50%;
+      border: 1.5px solid var(--accent);
+      opacity: 0.5;
+      animation: ring 1.6s ease-out infinite;
+    }
+    @keyframes ring { 0% { transform: scale(0.6); opacity: 0.6; } 100% { transform: scale(1.4); opacity: 0; } }
+    .pipeline__step .label { font-size: 13.5px; font-weight: 500; color: var(--ink); }
+    .pipeline__step .hint { font-family: var(--f-mono); font-size: 11px; color: var(--ink-soft); }
+
+    .panel__metrics {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      border-top: 1px solid var(--rule);
+      margin-top: 14px; padding-top: 14px;
+    }
+    .panel__metric { padding: 0 10px; position: relative; }
+    .panel__metric + .panel__metric { border-left: 1px solid var(--rule); }
+    .panel__metric .k { font-family: var(--f-mono); font-size: 11px; color: var(--ink-soft); letter-spacing: 0.04em; text-transform: uppercase; }
+    .panel__metric .v { font-family: var(--f-mono); font-variant-numeric: tabular-nums; font-size: 22px; font-weight: 500; color: var(--ink); letter-spacing: -0.02em; margin-top: 4px; }
+    .panel__metric .v small { font-size: 12px; color: var(--ink-soft); font-weight: 400; letter-spacing: 0; margin-left: 2px; }
+
+    .panel--float-tl {
+      top: -24px; left: -24px; width: 220px;
+      padding: 14px 16px; border-radius: 20px;
+      display: flex; align-items: center; gap: 12px;
+      animation: float 6s ease-in-out infinite;
+    }
+    .panel--float-br {
+      bottom: -18px; right: -18px; width: 260px;
+      padding: 14px 16px; border-radius: 20px;
+      display: flex; align-items: center; gap: 12px;
+      animation: float 7s ease-in-out infinite reverse;
+    }
+    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+    .float-kv { display: flex; align-items: center; gap: 12px; }
+    .float-kv .k { font-family: var(--f-mono); font-size: 10.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); }
+    .float-kv .v { font-family: var(--f-mono); font-variant-numeric: tabular-nums; font-size: 18px; font-weight: 500; color: var(--ink); margin-top: 4px; letter-spacing: -0.015em; }
+    .float-kv .v small { font-size: 11px; color: var(--ink-soft); margin-left: 2px; }
+    .float-icon {
+      width: 36px; height: 36px; flex-shrink: 0;
+      border-radius: 10px;
+      background: var(--accent-tint); color: var(--accent);
+      display: grid; place-items: center;
+    }
+    .float-icon svg { width: 18px; height: 18px; }
+
+    /* ===== SECTION HEAD ===== */
+    .section { padding: clamp(48px, 7vw, 112px) 0; position: relative; }
+    .section__head {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: clamp(24px, 5vw, 80px);
+      align-items: end;
+      padding-bottom: clamp(32px, 4vw, 56px);
+      border-bottom: 1px solid var(--rule);
+      margin-bottom: clamp(32px, 4vw, 56px);
+    }
+    .section__index { font-family: var(--f-mono); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); padding-bottom: 8px; }
+    .section__title {
+      font-size: clamp(28px, 3.2vw, 42px);
+      font-weight: 600;
+      letter-spacing: -0.028em;
+      line-height: 1.08;
+      max-width: 28ch;
+    }
+    .section__title .muted { color: var(--ink-mid); font-weight: 500; }
+
+    /* ===== FEATURES — ZIG-ZAG ===== */
+    .zigzag { display: flex; flex-direction: column; gap: clamp(40px, 6vw, 96px); }
+    .zig {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(32px, 5vw, 88px);
+      align-items: center;
+    }
+    .zig--reverse .zig__visual { order: 2; }
+    .zig--reverse .zig__copy   { order: 1; }
+
+    .zig__copy { max-width: 48ch; }
+    .zig__tag { display: inline-flex; align-items: center; gap: 10px; font-family: var(--f-mono); font-size: 11.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); }
+    .zig__tag .num { color: var(--accent); font-weight: 500; }
+    .zig__title { font-size: clamp(26px, 2.6vw, 34px); font-weight: 600; letter-spacing: -0.025em; line-height: 1.15; margin-top: 14px; }
+    .zig__copy p { margin-top: 18px; color: var(--ink-mid); font-size: 16px; max-width: 42ch; }
+    .zig__stats { display: flex; gap: 28px; margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--rule); flex-wrap: wrap; }
+    .zig__stat .k { font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); }
+    .zig__stat .v { font-family: var(--f-mono); font-variant-numeric: tabular-nums; font-size: 22px; font-weight: 500; color: var(--ink); letter-spacing: -0.02em; margin-top: 4px; }
+    .zig__stat .v sub { font-size: 12px; color: var(--ink-soft); font-weight: 400; letter-spacing: 0; margin-left: 2px; vertical-align: baseline; }
+
+    .zig__visual {
+      aspect-ratio: 4 / 3;
+      position: relative;
+      border-radius: var(--r-xl);
+      background: var(--card);
+      border: 1px solid var(--rule);
+      box-shadow: var(--shadow-diffuse);
+      overflow: hidden;
+      padding: 28px;
+    }
+
+    .viz-speed { display: flex; flex-direction: column; justify-content: space-between; height: 100%; }
+    .viz-speed__label { font-family: var(--f-mono); font-size: 11.5px; letter-spacing: 0.1em; color: var(--ink-soft); text-transform: uppercase; }
+    .viz-speed__bignum { font-family: var(--f-mono); font-variant-numeric: tabular-nums; font-size: clamp(72px, 10vw, 144px); font-weight: 500; letter-spacing: -0.05em; line-height: 0.86; color: var(--ink); margin-top: 8px; }
+    .viz-speed__bignum .unit { font-size: 0.28em; color: var(--ink-soft); letter-spacing: 0.04em; margin-left: 6px; }
+    .viz-speed__bars { display: grid; grid-template-columns: repeat(32, 1fr); gap: 3px; margin-top: 24px; }
+    .viz-speed__bars span { height: 18px; border-radius: 3px; background: rgba(24, 24, 27, 0.06); }
+    .viz-speed__bars span.on { background: var(--accent); }
+    .viz-speed__bars span.mid { background: rgba(5, 150, 105, 0.3); }
+    .viz-speed__legend { display: flex; justify-content: space-between; margin-top: 14px; font-family: var(--f-mono); font-size: 11px; color: var(--ink-soft); }
+
+    .viz-roll { height: 100%; display: flex; flex-direction: column; justify-content: center; gap: 12px; }
+    .viz-roll__row {
+      display: grid;
+      grid-template-columns: 88px 1fr auto;
+      gap: 14px; align-items: center;
+      padding: 12px 14px;
+      border-radius: var(--r-md);
+      border: 1px solid var(--rule);
+      background: var(--card-alt);
+      position: relative;
+    }
+    .viz-roll__row .ver { font-family: var(--f-mono); font-size: 13px; color: var(--ink); font-weight: 500; }
+    .viz-roll__row .msg { font-size: 13px; color: var(--ink-mid); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .viz-roll__row .ts  { font-family: var(--f-mono); font-size: 11px; color: var(--ink-soft); }
+    .viz-roll__row.is-target { border-color: var(--accent); background: var(--accent-tint); }
+    .viz-roll__row.is-target::after {
+      content: '← 恢复到这一版';
+      position: absolute; right: 14px; top: 50%;
+      transform: translateY(-50%);
+      font-family: var(--f-mono); font-size: 11px;
+      color: var(--accent); font-weight: 500;
+      padding-left: 14px;
+      background: linear-gradient(to right, transparent, var(--accent-tint) 25%);
+    }
+    .viz-roll__row.is-bad .ver { color: #be123c; }
+    .viz-roll__row.is-bad .msg::before {
+      content: '失败 ';
+      font-family: var(--f-mono); font-size: 10px; font-weight: 600;
+      padding: 1px 6px; border-radius: 4px;
+      background: #fce7ee; color: #be123c;
+      margin-right: 6px; letter-spacing: 0.05em;
+    }
+
+    .viz-obs { height: 100%; display: flex; flex-direction: column; justify-content: space-between; }
+    .viz-obs__head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; }
+    .viz-obs__head .label { font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); }
+    .viz-obs__head .now { font-family: var(--f-mono); font-variant-numeric: tabular-nums; font-size: 22px; font-weight: 500; letter-spacing: -0.02em; margin-top: 4px; }
+    .viz-obs__head .now small { font-size: 13px; color: var(--ink-soft); margin-left: 2px; }
+    .viz-obs__chart { flex: 1; margin: 20px 0 12px; min-height: 100px; }
+    .viz-obs__chart svg { width: 100%; height: 100%; }
+    .viz-obs__tags { display: flex; gap: 10px; flex-wrap: wrap; }
+    .tag { font-family: var(--f-mono); font-size: 11px; padding: 4px 10px; border-radius: 999px; background: rgba(24, 24, 27, 0.04); color: var(--ink-mid); display: inline-flex; align-items: center; gap: 6px; }
+    .tag .d { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+    .tag.warn .d { background: #f59e0b; }
+
+    /* ===== SUPPORT — border-divided strip ===== */
+    .support {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      margin-top: clamp(56px, 6vw, 88px);
+      padding: clamp(24px, 3vw, 36px) 0;
+      border-top: 1px solid var(--rule);
+      border-bottom: 1px solid var(--rule);
+    }
+    .support__tile { padding: 12px clamp(20px, 2vw, 32px); display: flex; flex-direction: column; gap: 10px; }
+    .support__tile + .support__tile { border-left: 1px solid var(--rule); }
+    .support__tile__icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: var(--accent-tint); color: var(--accent);
+      display: grid; place-items: center;
+    }
+    .support__tile__icon svg { width: 18px; height: 18px; }
+    .support__tile__title { font-size: 16.5px; font-weight: 600; letter-spacing: -0.01em; margin-top: 4px; }
+    .support__tile__copy  { color: var(--ink-mid); font-size: 14px; max-width: 34ch; }
+
+    /* ===== TESTIMONIALS — editorial bento ===== */
+    .voices {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 1fr;
+      gap: 16px;
+    }
+    .voice {
+      background: var(--card);
+      border: 1px solid var(--rule);
+      border-radius: var(--r-lg);
+      padding: clamp(24px, 2.4vw, 36px);
+      display: flex; flex-direction: column; justify-content: space-between;
+      gap: 24px;
+      box-shadow: var(--shadow-card);
+      transition: transform 260ms var(--ease), box-shadow 260ms var(--ease);
+    }
+    .voice:hover { transform: translateY(-3px); box-shadow: var(--shadow-diffuse); }
+    .voice__text { font-size: 17px; line-height: 1.55; color: var(--ink); font-weight: 400; }
+    .voice--feat { background: var(--ink-dark); color: var(--bg); border-color: transparent; }
+    .voice--feat .voice__text { color: var(--bg); font-size: 19px; }
+    .voice--feat .name { color: var(--bg); }
+    .voice--feat .meta-dim { color: rgba(255,255,255,0.55) !important; }
+
+    .voice__author { display: flex; align-items: center; gap: 12px; }
+    .voice__avatar {
+      width: 38px; height: 38px; border-radius: 50%;
+      background: linear-gradient(135deg, #fef3c7 0%, #fbbf24 100%);
+      display: grid; place-items: center;
+      font-weight: 600; color: #422006;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+    .voice__avatar--2 { background: linear-gradient(135deg, #dcfce7, #22c55e); color: #14532d; }
+    .voice__avatar--3 { background: linear-gradient(135deg, #fee2e2, #f87171); color: #7f1d1d; }
+    .voice__author .name { font-size: 14px; font-weight: 600; }
+    .voice__author .meta-dim { font-size: 12.5px; color: var(--ink-soft); margin-top: 2px; }
+
+    /* ===== PRICING ===== */
+    .tiers {
+      display: grid;
+      grid-template-columns: 1fr 1.12fr 1fr;
+      gap: 16px;
+      align-items: stretch;
+    }
+    .tier {
+      background: var(--card);
+      border: 1px solid var(--rule);
+      border-radius: var(--r-lg);
+      padding: clamp(24px, 2.4vw, 36px);
+      display: flex; flex-direction: column;
+      box-shadow: var(--shadow-card);
+    }
+    .tier--feat {
+      background: var(--ink-dark);
+      color: var(--bg);
+      border-color: transparent;
+      box-shadow: var(--shadow-pop);
+      transform: translateY(-6px);
+      position: relative;
+    }
+    .tier--feat::before {
+      content: '多数团队选这个';
+      position: absolute;
+      top: -12px; left: 50%; transform: translateX(-50%);
+      font-family: var(--f-mono); font-size: 11px;
+      padding: 4px 12px;
+      background: var(--accent); color: #fafafa;
+      border-radius: 999px;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+    }
+    .tier__name { font-family: var(--f-mono); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); }
+    .tier--feat .tier__name { color: rgba(255,255,255,0.65); }
+    .tier__price { margin-top: 16px; display: flex; align-items: baseline; gap: 4px; font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+    .tier__price .amt { font-size: 48px; font-weight: 500; letter-spacing: -0.03em; line-height: 1; }
+    .tier__price .per { font-size: 14px; color: var(--ink-soft); font-weight: 400; }
+    .tier--feat .tier__price .per { color: rgba(255,255,255,0.55); }
+    .tier__desc { margin-top: 12px; color: var(--ink-mid); font-size: 14px; max-width: 34ch; }
+    .tier--feat .tier__desc { color: rgba(255,255,255,0.72); }
+    .tier__list { margin-top: 28px; display: flex; flex-direction: column; gap: 12px; }
+    .tier__list li { font-size: 14.5px; display: flex; gap: 10px; align-items: baseline; color: var(--ink); }
+    .tier--feat .tier__list li { color: rgba(255,255,255,0.88); }
+    .tier__list li svg { width: 16px; height: 16px; flex-shrink: 0; color: var(--accent); margin-top: 3px; }
+    .tier--feat .tier__list li svg { color: #6ee7b7; }
+    .tier__cta { margin-top: auto; padding-top: 24px; }
+    .tier__cta .btn { width: 100%; justify-content: center; }
+
+    /* ===== FINAL CTA ===== */
+    .final {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr;
+      gap: clamp(32px, 5vw, 80px);
+      align-items: center;
+      padding: clamp(48px, 6vw, 96px);
+      border-radius: var(--r-xl);
+      background: var(--ink-dark);
+      color: var(--bg);
+      position: relative;
+      overflow: hidden;
+    }
+    .final::before {
+      content: ''; position: absolute;
+      top: -40%; right: -10%;
+      width: 60%; aspect-ratio: 1;
+      background: radial-gradient(circle, rgba(5, 150, 105, 0.3), transparent 65%);
+      filter: blur(40px); pointer-events: none;
+    }
+    .final h2 {
+      font-size: clamp(32px, 4vw, 52px);
+      font-weight: 500;
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+      max-width: 18ch;
+      position: relative;
+    }
+    .final h2 em { font-style: normal; color: var(--accent); }
+    .final__right { display: flex; flex-direction: column; gap: 16px; align-items: flex-start; position: relative; }
+    .final__right p { color: rgba(255,255,255,0.65); font-size: 15px; max-width: 34ch; line-height: 1.55; }
+    .final__right code { font-family: var(--f-mono); background: rgba(255,255,255,0.08); padding: 2px 8px; border-radius: 6px; font-size: 13.5px; }
+
+    /* ===== FOOTER ===== */
+    .foot { padding: clamp(56px, 6vw, 96px) 0 40px; margin-top: clamp(56px, 6vw, 96px); }
+    .foot__grid {
+      display: grid;
+      grid-template-columns: 2.2fr 1fr 1fr 1fr;
+      gap: 48px;
+      padding-bottom: 40px;
+      border-bottom: 1px solid var(--rule);
+    }
+    .foot__brand p { color: var(--ink-mid); font-size: 14px; max-width: 32ch; margin-top: 14px; }
+    .foot__col h4 { font-family: var(--f-mono); font-size: 11.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-soft); font-weight: 500; margin-bottom: 14px; }
+    .foot__col li { padding: 5px 0; font-size: 14px; color: var(--ink-mid); }
+    .foot__col a:hover { color: var(--ink); }
+    .foot__bottom { padding-top: 24px; display: flex; justify-content: space-between; align-items: center; font-family: var(--f-mono); font-size: 12px; color: var(--ink-soft); letter-spacing: 0.04em; }
+    .foot__version { padding: 4px 10px; border-radius: 999px; background: var(--accent-tint); color: var(--accent-deep); letter-spacing: 0.1em; text-transform: uppercase; font-size: 11px; }
+
+    /* ===== Scroll reveal ===== */
+    .reveal { opacity: 0; transform: translateY(18px); transition: opacity 600ms var(--ease), transform 600ms var(--ease); will-change: opacity, transform; }
+    .reveal.is-in { opacity: 1; transform: none; }
+
+    /* Hero first-paint stagger */
+    .hero__copy > * { opacity: 0; transform: translateY(10px); animation: heroIn 700ms var(--ease) forwards; }
+    .hero__copy > *:nth-child(1) { animation-delay: 80ms; }
+    .hero__copy > *:nth-child(2) { animation-delay: 180ms; }
+    .hero__copy > *:nth-child(3) { animation-delay: 280ms; }
+    .hero__copy > *:nth-child(4) { animation-delay: 380ms; }
+    .hero__copy > *:nth-child(5) { animation-delay: 480ms; }
+    .hero__visual { opacity: 0; transform: translateY(20px) scale(0.98); animation: heroVisualIn 800ms var(--ease) 300ms forwards; }
+    @keyframes heroIn { to { opacity: 1; transform: none; } }
+    @keyframes heroVisualIn { to { opacity: 1; transform: none; } }
+
+    /* ===== Responsive ===== */
+    @media (max-width: 1024px) {
+      .hero { grid-template-columns: 1fr; min-height: auto; padding: 40px 0 64px; }
+      .hero__visual { aspect-ratio: 1.25 / 1; margin-top: 24px; }
+      .panel--float-tl, .panel--float-br { display: none; }
+
+      .zig { grid-template-columns: 1fr; gap: 32px; }
+      .zig--reverse .zig__visual, .zig--reverse .zig__copy { order: unset; }
+
+      .support { grid-template-columns: 1fr; }
+      .support__tile { padding: 20px 0; border-left: 0 !important; }
+      .support__tile + .support__tile { border-top: 1px solid var(--rule); }
+
+      .voices { grid-template-columns: 1fr; }
+      .tiers { grid-template-columns: 1fr; gap: 20px; }
+      .tier--feat { transform: none; }
+      .final { grid-template-columns: 1fr; padding: 40px; }
+      .foot__grid { grid-template-columns: 1fr 1fr; gap: 36px; }
+    }
+
+    @media (max-width: 720px) {
+      .topbar__row .nav { display: none; }
+      .topbar__cta .btn--ghost { display: none; }
+      .section__head { grid-template-columns: 1fr; gap: 12px; }
+      .hero__trust { flex-direction: column; align-items: flex-start; gap: 14px; }
+      .hero__trust__logos { flex-wrap: wrap; gap: 14px; }
+      .voice--feat .voice__text { font-size: 17px; }
+      .tier__price .amt { font-size: 40px; }
+      .foot__grid { grid-template-columns: 1fr; gap: 32px; }
+      .foot__bottom { flex-direction: column; gap: 10px; align-items: flex-start; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0ms !important; transition-duration: 0ms !important; }
+      .reveal { opacity: 1; transform: none; }
+      .hero__copy > *, .hero__visual { opacity: 1; transform: none; animation: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-mesh" aria-hidden="true"></div>
+
+  <!-- ===== TOPBAR ===== -->
+  <header class="topbar">
+    <div class="page topbar__row">
+      <a href="#" class="brand">
+        <svg class="brand__mark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <rect x="2" y="2" width="20" height="20" rx="6" fill="#18181b"/>
+          <path d="M7 12l3.2 3.2L17 8.5" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        DeploySea
+      </a>
+      <nav class="nav" aria-label="主导航">
+        <a href="#pipeline">流水线</a>
+        <a href="#why">能帮到你</a>
+        <a href="#voices">谁在用</a>
+        <a href="#pricing">定价</a>
+        <a href="#docs">文档</a>
+      </nav>
+      <div class="topbar__cta">
+        <a href="#" class="btn btn--ghost">登录</a>
+        <a href="#" class="btn btn--ink">立即部署</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="page">
+
+    <!-- ===== HERO ===== -->
+    <section class="hero" id="pipeline" aria-label="Hero">
+      <div class="hero__copy">
+        <span class="eyebrow"><span class="eyebrow__dot"></span>1.0 正式版 · 已用于生产</span>
+        <h1>
+          把 Demo 推上线，<br>
+          <span class="muted">不再是一个下午的事——</span><br>
+          <span class="accent">是一条命令的事。</span>
+        </h1>
+        <p class="hero__sub">
+          本地能跑，跟线上稳定能扛，中间隔着 YAML、证书、监控告警和半夜的回滚。DeploySea 把这一段整段接走——你推代码，我们上线。
+        </p>
+        <div class="hero__actions">
+          <a href="#" class="btn btn--accent btn--lg">免费部署第一个项目</a>
+          <a href="#" class="btn btn--text">看 2 分钟真实部署</a>
+        </div>
+        <div class="hero__trust">
+          <span class="hero__trust__label">已跑在</span>
+          <span class="hero__trust__count">482 个团队</span>
+          <ul class="hero__trust__logos" aria-label="部分客户">
+            <li>Halcyon</li><li>Ledger</li><li>Arbor</li><li>Meridian</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="hero__visual" aria-hidden="true">
+        <div class="panel panel--main">
+          <div class="panel__head">
+            <div class="panel__title">
+              <span class="tick"></span>
+              <span>deploy · <span class="proj">halcyon-api</span></span>
+            </div>
+            <div class="panel__meta">ap-southeast-1 · 14:27:03</div>
+          </div>
+
+          <div class="pipeline">
+            <div class="pipeline__step is-done">
+              <span class="dot"><svg viewBox="0 0 24 24" fill="none" width="12" height="12"><path d="M5 12l4 4 10-10" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              <span class="label">构建镜像</span>
+              <span class="hint">9.2s</span>
+            </div>
+            <div class="pipeline__step is-done">
+              <span class="dot"><svg viewBox="0 0 24 24" fill="none" width="12" height="12"><path d="M5 12l4 4 10-10" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              <span class="label">执行迁移</span>
+              <span class="hint">2.8s</span>
+            </div>
+            <div class="pipeline__step is-active">
+              <span class="dot"><svg viewBox="0 0 24 24" fill="none" width="12" height="12"><circle cx="12" cy="12" r="4" fill="currentColor"/></svg></span>
+              <span class="label">推送到 3 个区域</span>
+              <span class="hint">hkg · sin · nrt</span>
+            </div>
+            <div class="pipeline__step">
+              <span class="dot"><svg viewBox="0 0 24 24" fill="none" width="12" height="12"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.5"/></svg></span>
+              <span class="label">健康检查</span>
+              <span class="hint">排队中</span>
+            </div>
+          </div>
+
+          <div class="panel__metrics">
+            <div class="panel__metric">
+              <div class="k">p95 延迟</div>
+              <div class="v">47.2<small>ms</small></div>
+            </div>
+            <div class="panel__metric">
+              <div class="k">区域</div>
+              <div class="v">12</div>
+            </div>
+            <div class="panel__metric">
+              <div class="k">30 天可用性</div>
+              <div class="v">99.84<small>%</small></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel panel--float-tl">
+          <div class="float-kv">
+            <span class="float-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h8l-1 8 10-12h-8l1-8z"/></svg>
+            </span>
+            <div>
+              <div class="k">平均部署</div>
+              <div class="v">30.4<small>秒</small></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel panel--float-br">
+          <div class="float-kv">
+            <span class="float-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5z"/><path d="m2 17 10 5 10-5M2 12l10 5 10-5"/></svg>
+            </span>
+            <div>
+              <div class="k">回滚用时</div>
+              <div class="v">12<small>秒</small></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== FEATURES — ZIG-ZAG ===== -->
+    <section class="section" id="why" aria-label="你会拿回什么">
+      <div class="section__head">
+        <div class="section__index reveal">/ 01 — 你会拿回什么</div>
+        <h2 class="section__title reveal">
+          从 Demo 到线上，中间那段路是看不见的活。<span class="muted">我们做过一遍，你就不用再做。</span>
+        </h2>
+      </div>
+
+      <div class="zigzag">
+
+        <!-- Row 1 — speed -->
+        <article class="zig reveal">
+          <div class="zig__copy">
+            <div class="zig__tag"><span class="num">01</span> / 部署速度</div>
+            <h3 class="zig__title">30 秒部署。不是口号，是默认。</h3>
+            <p>增量构建 + 镜像层缓存 + 内容寻址。你改一个按钮文案，下一个用户在你咖啡凉之前就能看到。</p>
+            <div class="zig__stats">
+              <div class="zig__stat"><div class="k">平均部署</div><div class="v">30.4<sub>秒</sub></div></div>
+              <div class="zig__stat"><div class="k">p50 构建</div><div class="v">9.2<sub>秒</sub></div></div>
+              <div class="zig__stat"><div class="k">缓存命中</div><div class="v">87.3<sub>%</sub></div></div>
+            </div>
+          </div>
+          <div class="zig__visual">
+            <div class="viz-speed">
+              <div>
+                <div class="viz-speed__label">平均部署时长 · 近 30 天</div>
+                <div class="viz-speed__bignum">30<span class="unit">.4s</span></div>
+              </div>
+              <div>
+                <div class="viz-speed__bars" aria-hidden="true">
+                  <span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span>
+                  <span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span>
+                  <span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span>
+                  <span class="on"></span><span class="on"></span><span class="mid"></span><span class="mid"></span>
+                  <span class="mid"></span><span class="mid"></span><span></span><span></span>
+                  <span></span><span></span><span></span><span></span>
+                  <span></span><span></span><span></span><span></span>
+                  <span></span><span></span><span></span><span></span>
+                </div>
+                <div class="viz-speed__legend"><span>0 秒</span><span>90 秒</span></div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Row 2 — rollback -->
+        <article class="zig zig--reverse reveal">
+          <div class="zig__visual">
+            <div class="viz-roll">
+              <div class="viz-roll__row">
+                <span class="ver">v128.3</span>
+                <span class="msg">fix: 修定价卡片的 tab 顺序</span>
+                <span class="ts">刚刚</span>
+              </div>
+              <div class="viz-roll__row is-bad">
+                <span class="ver">v128.2</span>
+                <span class="msg">feat: 扣费 webhook 重试</span>
+                <span class="ts">14:21</span>
+              </div>
+              <div class="viz-roll__row is-target">
+                <span class="ver">v128.1</span>
+                <span class="msg">chore: 升级 zod、修 tsconfig</span>
+                <span class="ts">12:47</span>
+              </div>
+              <div class="viz-roll__row">
+                <span class="ver">v128.0</span>
+                <span class="msg">release: 定价 v2 + 组织席位</span>
+                <span class="ts">08:04</span>
+              </div>
+            </div>
+          </div>
+          <div class="zig__copy">
+            <div class="zig__tag"><span class="num">02</span> / 一键回滚</div>
+            <h3 class="zig__title">先按，再想。</h3>
+            <p>每一次部署都是一个恢复点——不用手动做快照，不用问"周二那版叫什么名字"。点一行历史，12 秒前的版本就回到线上。查问题放在之后。</p>
+            <div class="zig__stats">
+              <div class="zig__stat"><div class="k">回滚用时</div><div class="v">12<sub>秒</sub></div></div>
+              <div class="zig__stat"><div class="k">保留历史</div><div class="v">90<sub>天</sub></div></div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Row 3 — observability -->
+        <article class="zig reveal">
+          <div class="zig__copy">
+            <div class="zig__tag"><span class="num">03</span> / 可观测性</div>
+            <h3 class="zig__title">日志、指标、调用链，一屏看完。</h3>
+            <p>请求追踪、CPU、内存、错误率、日志实时流——同一个面板。不用配 Grafana，不用再开一个 Sentry 项目，不用在用户等着的时候来回切 tab。</p>
+            <div class="zig__stats">
+              <div class="zig__stat"><div class="k">p95 延迟</div><div class="v">47.2<sub>ms</sub></div></div>
+              <div class="zig__stat"><div class="k">告警通道</div><div class="v" style="font-size:15px;">飞书 · Slack</div></div>
+            </div>
+          </div>
+          <div class="zig__visual">
+            <div class="viz-obs">
+              <div class="viz-obs__head">
+                <div>
+                  <div class="label">p95 延迟 · 近 1 小时</div>
+                  <div class="now">47.2<small>ms</small></div>
+                </div>
+                <div style="text-align:right;">
+                  <div class="label">错误率</div>
+                  <div class="now">0.08<small>%</small></div>
+                </div>
+              </div>
+              <div class="viz-obs__chart">
+                <svg viewBox="0 0 320 120" preserveAspectRatio="none">
+                  <defs>
+                    <linearGradient id="obs-grad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="#059669" stop-opacity="0.25"/>
+                      <stop offset="100%" stop-color="#059669" stop-opacity="0"/>
+                    </linearGradient>
+                  </defs>
+                  <path d="M0,92 L16,88 L32,94 L48,72 L64,78 L80,68 L96,84 L112,66 L128,72 L144,58 L160,66 L176,48 L192,62 L208,44 L224,52 L240,38 L256,50 L272,30 L288,42 L304,22 L320,32 L320,120 L0,120 Z" fill="url(#obs-grad)"/>
+                  <path d="M0,92 L16,88 L32,94 L48,72 L64,78 L80,68 L96,84 L112,66 L128,72 L144,58 L160,66 L176,48 L192,62 L208,44 L224,52 L240,38 L256,50 L272,30 L288,42 L304,22 L320,32" fill="none" stroke="#059669" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                  <circle cx="320" cy="32" r="4" fill="#059669"/>
+                  <circle cx="320" cy="32" r="8" fill="#059669" opacity="0.2"/>
+                </svg>
+              </div>
+              <div class="viz-obs__tags">
+                <span class="tag"><span class="d"></span>api · 1240 rpm</span>
+                <span class="tag"><span class="d"></span>worker · 312 rpm</span>
+                <span class="tag warn"><span class="d"></span>重试队列 · 4</span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+      </div>
+
+      <!-- Supporting features as divided strip (no box elevation) -->
+      <div class="support">
+        <div class="support__tile reveal">
+          <span class="support__tile__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+          </span>
+          <h4 class="support__tile__title">安全随包发布</h4>
+          <p class="support__tile__copy">自动 TLS、密钥托管、操作审计、SOC 2 合规——开箱就齐，不是 roadmap 上的一行。</p>
+        </div>
+        <div class="support__tile reveal">
+          <span class="support__tile__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          </span>
+          <h4 class="support__tile__title">12 个边缘节点，自动就近</h4>
+          <p class="support__tile__copy">用户的请求落在离他最近的节点。不用权重表，不用 DNS hack。平均感知延迟低于 50ms。</p>
+        </div>
+        <div class="support__tile reveal">
+          <span class="support__tile__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </span>
+          <h4 class="support__tile__title">PR 预览 + 操作审计</h4>
+          <p class="support__tile__copy">每个 PR 自动出一个临时 URL。每一次线上操作都能追到人。三个人同时发版也不会打架。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== TESTIMONIALS ===== -->
+    <section class="section" id="voices" aria-label="谁在用">
+      <div class="section__head">
+        <div class="section__index reveal">/ 02 — 谁在用</div>
+        <h2 class="section__title reveal">他们把"发版日"换成了一杯咖啡的时间。</h2>
+      </div>
+
+      <div class="voices">
+        <article class="voice voice--feat reveal">
+          <p class="voice__text">&ldquo;从 Demo 到线上只用了一个下午。对独立开发者来说，DeploySea 最大的价值不是炫——是让我继续写代码，而不是回去读 nginx 文档。&rdquo;</p>
+          <div class="voice__author">
+            <div class="voice__avatar">A</div>
+            <div>
+              <div class="name">A梦</div>
+              <div class="meta-dim">独立开发者 · 3 款上线产品</div>
+            </div>
+          </div>
+        </article>
+
+        <article class="voice reveal">
+          <p class="voice__text">&ldquo;一次发版半小时，现在 30 秒。团队的发版焦虑例会，从日历上消失了。&rdquo;</p>
+          <div class="voice__author">
+            <div class="voice__avatar voice__avatar--2">林</div>
+            <div>
+              <div class="name">林青</div>
+              <div class="meta-dim">技术负责人 · Halcyon</div>
+            </div>
+          </div>
+        </article>
+
+        <article class="voice reveal">
+          <p class="voice__text">&ldquo;两次线上事故我不用再写复盘——光这一个回滚按钮，就把 Team 版的钱回本了两次。&rdquo;</p>
+          <div class="voice__author">
+            <div class="voice__avatar voice__avatar--3">王</div>
+            <div>
+              <div class="name">王树</div>
+              <div class="meta-dim">DevOps 负责人 · Meridian Commerce</div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ===== PRICING ===== -->
+    <section class="section" id="pricing" aria-label="定价">
+      <div class="section__head">
+        <div class="section__index reveal">/ 03 — 定价</div>
+        <h2 class="section__title reveal">三个档，价格写在明面上。<span class="muted">没有"联系销售"的那个数字。</span></h2>
+      </div>
+
+      <div class="tiers">
+        <article class="tier tier--free reveal">
+          <div class="tier__name">Hobby · 免费</div>
+          <div class="tier__price"><span class="amt">¥0</span><span class="per">/月</span></div>
+          <p class="tier__desc">让第一个 Demo 离开你的笔记本，挂在一个真实的 URL 上。</p>
+          <ul class="tier__list">
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 13l4 4L19 7"/></svg>1 个项目</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 13l4 4L19 7"/></svg>每月 100 次部署</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 13l4 4L19 7"/></svg>社区支持</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 13l4 4L19 7"/></svg>自动 TLS 续签</li>
+          </ul>
+          <div class="tier__cta"><a href="#" class="btn btn--ghost">免费开始</a></div>
+        </article>
+
+        <article class="tier tier--feat reveal">
+          <div class="tier__name">Team · 团队</div>
+          <div class="tier__price"><span class="amt">¥199</span><span class="per">/月</span></div>
+          <p class="tier__desc">5–20 人团队，产品稳定期的首选。该开的都开着。</p>
+          <ul class="tier__list">
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 13l4 4L19 7"/></svg>无限项目、无限次部署</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 13l4 4L19 7"/></svg>12 区域边缘分发</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 13l4 4L19 7"/></svg>PR 预览 + 评审历史</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 13l4 4L19 7"/></svg>优先响应（1 小时内）</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 13l4 4L19 7"/></svg>操作审计日志</li>
+          </ul>
+          <div class="tier__cta"><a href="#" class="btn btn--accent">免费试用 14 天</a></div>
+        </article>
+
+        <article class="tier tier--biz reveal">
+          <div class="tier__name">Enterprise · 企业</div>
+          <div class="tier__price"><span class="amt">议价</span></div>
+          <p class="tier__desc">需要私有云、安全审计、或自定 SLA 的团队。</p>
+          <ul class="tier__list">
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 13l4 4L19 7"/></svg>自托管或私有云部署</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 13l4 4L19 7"/></svg>专属客户工程师</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 13l4 4L19 7"/></svg>SSO · SAML</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 13l4 4L19 7"/></svg>自定 SLA + 责任保障</li>
+          </ul>
+          <div class="tier__cta"><a href="#" class="btn btn--ghost">联系我们</a></div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ===== FINAL CTA ===== -->
+    <section class="section" aria-label="开始部署">
+      <div class="final reveal">
+        <h2>你下一个 <em>Demo</em>，离一个真实 URL 只差一条命令。</h2>
+        <div class="final__right">
+          <p>14 天免费试用，不用信用卡。接上 GitHub 仓库，敲 <code>deploysea push</code>，看看它会落在哪。</p>
+          <a href="#" class="btn btn--accent btn--lg">部署第一个项目</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="foot">
+    <div class="page">
+      <div class="foot__grid">
+        <div class="foot__brand">
+          <a href="#" class="brand">
+            <svg class="brand__mark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <rect x="2" y="2" width="20" height="20" rx="6" fill="#18181b"/>
+              <path d="M7 12l3.2 3.2L17 8.5" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            DeploySea
+          </a>
+          <p>把生产环境里那些非代码的事整段接走，让它自己照顾自己。</p>
+        </div>
+        <div class="foot__col">
+          <h4>产品</h4>
+          <ul>
+            <li><a href="#">流水线</a></li>
+            <li><a href="#">可观测性</a></li>
+            <li><a href="#">定价</a></li>
+            <li><a href="#">更新日志</a></li>
+          </ul>
+        </div>
+        <div class="foot__col">
+          <h4>学习</h4>
+          <ul>
+            <li><a href="#">文档</a></li>
+            <li><a href="#">使用指南</a></li>
+            <li><a href="#">API 参考</a></li>
+            <li><a href="#">运行状态</a></li>
+          </ul>
+        </div>
+        <div class="foot__col">
+          <h4>关于</h4>
+          <ul>
+            <li><a href="#">我们是谁</a></li>
+            <li><a href="#">招聘</a></li>
+            <li><a href="#">隐私政策</a></li>
+            <li><a href="#">安全说明</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="foot__bottom">
+        <span>© 2026 DeploySea · 在杭州写代码，从任意地方发版</span>
+        <span class="foot__version">v4 · taste-skill</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      const els = document.querySelectorAll('.reveal');
+      if (!('IntersectionObserver' in window)) {
+        els.forEach(el => el.classList.add('is-in'));
+        return;
+      }
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-in');
+            io.unobserve(entry.target);
+          }
+        });
+      }, { rootMargin: '-8% 0px -8% 0px', threshold: 0.05 });
+      els.forEach((el) => io.observe(el));
+    })();
+  </script>
+  <script src="../_overlay.js" data-version="v4"></script>
+</body>
+</html>

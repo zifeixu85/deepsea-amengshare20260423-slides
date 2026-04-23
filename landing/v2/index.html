@@ -1,0 +1,1607 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DeploySea — 工程手册 № 02 · 从 Demo 到正式产品</title>
+  <meta name="description" content="DeploySea 部署工程手册第 02 卷：5 分钟把 Demo 发到生产线。" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..900,0..100;1,9..144,300..900,0..100&family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..700&family=JetBrains+Mono:wght@400;500;700&family=Noto+Serif+SC:wght@400;600;900&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    /* ==============================================
+       DeploySea · v2 — Editorial Engineering
+       Fraunces + Newsreader + JetBrains Mono
+       Warm paper · Ink · Vermillion · Deep Teal
+       ============================================== */
+
+    :root {
+      --paper:       oklch(95.5% 0.018 82);
+      --paper-deep:  oklch(92%   0.025 82);
+      --paper-soft:  oklch(97.2% 0.012 82);
+      --ink:         oklch(18%   0.02  60);
+      --ink-soft:    oklch(30%   0.02  60);
+      --ink-mute:    oklch(48%   0.015 70);
+      --rule:        oklch(82%   0.02  70);
+      --rule-soft:   oklch(88%   0.015 70);
+      --vermillion:  oklch(58%   0.205 34);
+      --vermillion-d:oklch(48%   0.19  32);
+      --teal:        oklch(46%   0.08  220);
+      --teal-deep:   oklch(30%   0.06  220);
+
+      --font-display: 'Fraunces', 'Noto Serif SC', 'Songti SC', 'SimSun', serif;
+      --font-body:    'Newsreader', 'Noto Serif SC', 'Songti SC', serif;
+      --font-mono:    'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+      --container: 1240px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    html, body { margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-body);
+      color: var(--ink);
+      background: var(--paper);
+      line-height: 1.55;
+      font-feature-settings: 'ss01', 'liga';
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.08  0 0 0 0 0.06  0 0 0 0 0.04  0 0 0 0.11 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+      opacity: 0.55;
+      mix-blend-mode: multiply;
+    }
+
+    body::after {
+      content: '';
+      position: fixed; inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background-image:
+        linear-gradient(to right, color-mix(in oklab, var(--ink) 7%, transparent) 1px, transparent 1px),
+        linear-gradient(to bottom, color-mix(in oklab, var(--ink) 7%, transparent) 1px, transparent 1px);
+      background-size: 96px 96px;
+      mask-image: radial-gradient(ellipse at 50% 30%, black 30%, transparent 70%);
+      opacity: 0.35;
+    }
+
+    .shell { position: relative; z-index: 2; }
+    .wrap {
+      max-width: var(--container);
+      margin: 0 auto;
+      padding: 0 32px;
+      position: relative;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    /* ===== 01 Colophon bar ===== */
+    .colophon {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-mute);
+      border-bottom: 1px solid var(--rule);
+      background: var(--paper-soft);
+    }
+    .colophon__row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 32px;
+      gap: 24px;
+    }
+    .colophon__ticker {
+      overflow: hidden; flex: 1;
+      mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+    }
+    .colophon__ticker-track {
+      display: inline-flex; gap: 48px;
+      white-space: nowrap;
+      animation: ticker 52s linear infinite;
+      padding-left: 100%;
+    }
+    .colophon__ticker-track span::before {
+      content: '◆';
+      color: var(--vermillion);
+      margin-right: 12px;
+    }
+    @keyframes ticker {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-100%); }
+    }
+    .colophon__counter b { font-weight: 700; color: var(--ink); }
+
+    /* ===== 02 Masthead ===== */
+    .masthead {
+      position: sticky; top: 0; z-index: 40;
+      background: color-mix(in oklab, var(--paper) 92%, transparent);
+      backdrop-filter: blur(8px) saturate(1.1);
+      border-bottom: 1px solid var(--rule);
+    }
+    .masthead__row {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 32px;
+      padding: 18px 0;
+    }
+    .wordmark {
+      display: inline-flex; align-items: baseline; gap: 10px;
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 26px;
+      letter-spacing: -0.025em;
+      line-height: 1;
+    }
+    .wordmark__dot {
+      width: 11px; height: 11px; border-radius: 50%;
+      background: var(--vermillion);
+      box-shadow: 0 0 0 3px color-mix(in oklab, var(--vermillion) 22%, transparent);
+      transform: translateY(-2px);
+    }
+    .wordmark__name em {
+      font-style: italic;
+      font-variation-settings: 'SOFT' 100, 'opsz' 144;
+      color: var(--vermillion-d);
+    }
+    .wordmark__ref {
+      font-family: var(--font-mono);
+      font-size: 10px; letter-spacing: 0.16em;
+      color: var(--ink-mute);
+      border: 1px solid var(--rule);
+      padding: 3px 7px; border-radius: 2px;
+      transform: translateY(-3px);
+    }
+
+    .nav {
+      display: flex; justify-content: center; gap: 38px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .nav a {
+      position: relative; padding-bottom: 3px;
+      color: var(--ink-soft);
+      transition: color 0.2s ease;
+    }
+    .nav a::after {
+      content: '';
+      position: absolute; left: 0; right: 100%; bottom: 0;
+      height: 1px; background: var(--vermillion);
+      transition: right 0.4s cubic-bezier(.2,.8,.2,1);
+    }
+    .nav a:hover { color: var(--ink); }
+    .nav a:hover::after { right: 0; }
+    .nav a sup {
+      font-size: 9px; color: var(--vermillion);
+      margin-left: 3px; letter-spacing: 0;
+    }
+
+    .auth { display: inline-flex; align-items: center; gap: 10px; }
+
+    /* Button primitives */
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 11px 18px;
+      border: 1px solid var(--ink);
+      background: transparent;
+      color: var(--ink);
+      cursor: pointer;
+      transition: all 0.25s ease;
+      border-radius: 0;
+      position: relative;
+    }
+    .btn:hover { background: var(--ink); color: var(--paper); }
+    .btn--solid { background: var(--ink); color: var(--paper); }
+    .btn--solid:hover {
+      background: var(--vermillion); border-color: var(--vermillion);
+      color: var(--paper-soft);
+    }
+    .btn--ghost { border-color: var(--rule); color: var(--ink-soft); }
+    .btn--ghost:hover { background: transparent; color: var(--ink); border-color: var(--ink); }
+    .btn__arrow {
+      display: inline-block;
+      transition: transform 0.25s ease;
+    }
+    .btn:hover .btn__arrow { transform: translateX(3px); }
+
+    /* ===== 03 Hero ===== */
+    .hero { position: relative; padding: 84px 0 72px; }
+
+    .hero__rail {
+      position: absolute;
+      top: 72px; bottom: 32px; left: 32px;
+      width: 1px;
+      background: linear-gradient(to bottom,
+        transparent, var(--rule) 12%, var(--rule) 88%, transparent);
+      display: none;
+    }
+    @media (min-width: 1080px) { .hero__rail { display: block; } }
+    .hero__rail::before,
+    .hero__rail::after {
+      content: '';
+      position: absolute; left: -4px;
+      width: 9px; height: 9px;
+      border: 1px solid var(--vermillion);
+      background: var(--paper);
+      border-radius: 50%;
+    }
+    .hero__rail::before { top: 8%; }
+    .hero__rail::after  { bottom: 8%; }
+
+    .hero__tag {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--vermillion-d);
+      display: inline-flex; align-items: center; gap: 10px;
+      margin-bottom: 28px;
+    }
+    .hero__tag::before {
+      content: ''; width: 32px; height: 1px; background: var(--vermillion);
+    }
+
+    .hero__layout {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 56px;
+      align-items: center;
+    }
+    @media (max-width: 960px) {
+      .hero__layout { grid-template-columns: 1fr; gap: 40px; }
+    }
+
+    .hero__headline {
+      font-family: var(--font-display);
+      font-weight: 340;
+      font-variation-settings: 'opsz' 144, 'SOFT' 30;
+      font-size: clamp(48px, 7.2vw, 108px);
+      line-height: 0.92;
+      letter-spacing: -0.035em;
+      color: var(--ink);
+      margin: 0 0 28px;
+    }
+    .hero__headline .swash {
+      font-style: italic;
+      font-variation-settings: 'opsz' 144, 'SOFT' 90;
+      color: var(--vermillion-d);
+      position: relative;
+    }
+    .hero__headline .swash::after {
+      content: ''; position: absolute; left: -6px; right: -8px; bottom: 6%;
+      height: 10px;
+      background: color-mix(in oklab, var(--vermillion) 26%, transparent);
+      z-index: -1;
+      transform: skewX(-9deg);
+    }
+    .hero__headline .strike { position: relative; color: var(--ink-mute); }
+    .hero__headline .strike::after {
+      content: ''; position: absolute; left: -2%; right: -2%; top: 54%;
+      height: 3px; background: var(--ink);
+      transform: rotate(-2.5deg);
+    }
+    .hero__headline .zh {
+      display: block;
+      font-family: 'Noto Serif SC', 'Songti SC', serif;
+      font-weight: 900;
+      font-size: 0.78em;
+      letter-spacing: -0.015em;
+      margin-top: 0.08em;
+    }
+
+    .hero__lead {
+      font-family: var(--font-body);
+      font-size: 19px;
+      max-width: 40ch;
+      color: var(--ink-soft);
+      margin: 0 0 36px;
+      font-variation-settings: 'opsz' 16;
+    }
+    .hero__lead em {
+      font-style: italic;
+      color: var(--ink);
+      font-family: var(--font-display);
+      font-variation-settings: 'SOFT' 70;
+    }
+
+    .hero__ctas {
+      display: flex; flex-wrap: wrap; gap: 14px;
+      margin-bottom: 40px;
+    }
+
+    .hero__meta {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-mute);
+      display: grid;
+      grid-template-columns: repeat(3, auto);
+      gap: 24px 32px;
+      padding-top: 20px;
+      border-top: 1px dashed var(--rule);
+      max-width: 520px;
+    }
+    .hero__meta dt { color: var(--ink-mute); font-weight: 400; margin-bottom: 4px; }
+    .hero__meta dd {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: 26px;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      font-variation-settings: 'opsz' 36, 'SOFT' 20;
+    }
+    .hero__meta dd sup { font-size: 11px; color: var(--vermillion); }
+
+    /* Hero schematic plate */
+    .plate {
+      position: relative;
+      background: var(--paper-soft);
+      border: 1px solid var(--rule);
+      padding: 28px 28px 22px;
+      box-shadow:
+        28px 28px 0 -1px var(--paper-deep),
+        28px 28px 0 0    var(--rule);
+    }
+    .plate__corner {
+      position: absolute;
+      width: 14px; height: 14px;
+      border: 1px solid var(--ink);
+    }
+    .plate__corner--tl { top: -1px; left: -1px; border-right: 0; border-bottom: 0; }
+    .plate__corner--tr { top: -1px; right: -1px; border-left: 0; border-bottom: 0; }
+    .plate__corner--bl { bottom: -1px; left: -1px; border-right: 0; border-top: 0; }
+    .plate__corner--br { bottom: -1px; right: -1px; border-left: 0; border-top: 0; }
+
+    .plate__caption {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--ink-mute);
+      display: flex; justify-content: space-between;
+      margin-bottom: 18px;
+    }
+    .plate__caption b { color: var(--ink); font-weight: 500; }
+
+    .terminal {
+      background: oklch(16% 0.02 60);
+      color: oklch(92% 0.01 80);
+      padding: 20px 22px 22px;
+      font-family: var(--font-mono);
+      font-size: 13.5px;
+      line-height: 1.78;
+      border-radius: 2px;
+      position: relative;
+      overflow: hidden;
+    }
+    .terminal::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(circle at 15% 0%, color-mix(in oklab, var(--vermillion) 22%, transparent), transparent 40%),
+        radial-gradient(circle at 85% 100%, color-mix(in oklab, var(--teal) 28%, transparent), transparent 40%);
+      pointer-events: none;
+      mix-blend-mode: screen;
+    }
+    .terminal__bar {
+      display: flex; align-items: center; gap: 6px;
+      margin-bottom: 12px; position: relative;
+    }
+    .terminal__bar i {
+      width: 9px; height: 9px; border-radius: 50%;
+      display: inline-block;
+    }
+    .terminal__bar i:nth-child(1) { background: oklch(60% 0.18 28); }
+    .terminal__bar i:nth-child(2) { background: oklch(78% 0.16 85); }
+    .terminal__bar i:nth-child(3) { background: oklch(70% 0.15 155); }
+    .terminal__bar small {
+      margin-left: auto;
+      font-size: 10px; letter-spacing: 0.18em;
+      color: oklch(60% 0.02 60); text-transform: uppercase;
+    }
+    .terminal__body { position: relative; }
+    .terminal__line { display: block; }
+    .terminal__line .p { color: oklch(72% 0.14 220); }
+    .terminal__line .c { color: oklch(78% 0.01 80); }
+    .terminal__line .k { color: oklch(72% 0.16 160); }
+    .terminal__line .w { color: oklch(78% 0.16 85); }
+    .terminal__line .ok { color: oklch(72% 0.18 155); font-weight: 700; }
+    .terminal__line .mute { color: oklch(55% 0.02 60); }
+    .terminal__line--highlight {
+      color: oklch(95% 0.02 82);
+      margin-top: 10px;
+      padding-left: 10px;
+      border-left: 2px solid var(--vermillion);
+    }
+    .cursor {
+      display: inline-block;
+      width: 8px; height: 1.05em;
+      background: oklch(92% 0.01 80);
+      vertical-align: -2px;
+      animation: blink 1.1s steps(1) infinite;
+    }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    .sticky {
+      position: absolute;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 8px 11px;
+      background: var(--paper);
+      border: 1px solid var(--ink);
+      box-shadow: 4px 4px 0 -1px var(--paper-deep), 4px 4px 0 0 var(--ink);
+      line-height: 1.35;
+    }
+    .sticky b { color: var(--vermillion-d); font-weight: 700; }
+    .sticky--a { top: -18px; left: -24px; transform: rotate(-4deg); }
+    .sticky--b { bottom: -28px; right: -18px; transform: rotate(3deg); }
+
+    /* ===== 04 Field Report ===== */
+    .field {
+      padding: 48px 0 56px;
+      border-top: 1px solid var(--rule);
+      border-bottom: 1px solid var(--rule);
+      background: var(--paper-soft);
+      position: relative;
+    }
+    .field__label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--ink-mute);
+      text-align: center;
+      margin-bottom: 28px;
+      position: relative;
+    }
+    .field__label::before {
+      content: '';
+      position: absolute; left: 10%; right: 10%; top: 50%;
+      height: 1px; background: var(--rule); z-index: 0;
+    }
+    .field__label span {
+      background: var(--paper-soft);
+      padding: 0 14px;
+      position: relative; z-index: 1;
+    }
+    .field__row {
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 32px 48px;
+    }
+    .field__brand {
+      font-family: var(--font-display);
+      font-variation-settings: 'opsz' 144, 'SOFT' 0;
+      font-weight: 500;
+      font-size: 26px;
+      letter-spacing: -0.02em;
+      color: var(--ink-soft);
+      opacity: 0.78;
+      transition: opacity 0.3s ease, color 0.3s ease;
+      display: inline-flex; align-items: center; gap: 10px;
+    }
+    .field__brand::before {
+      content: '§'; color: var(--vermillion); font-size: 18px;
+      opacity: 0.6;
+    }
+    .field__brand:hover { opacity: 1; color: var(--ink); }
+
+    /* ===== 05 Manifest ===== */
+    .manifest { padding: 120px 0 100px; position: relative; }
+
+    .section__eyebrow {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--vermillion-d);
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 16px;
+    }
+    .section__eyebrow::before {
+      content: ''; width: 24px; height: 1px; background: var(--vermillion);
+    }
+    .section__eyebrow span { color: var(--ink-mute); }
+
+    .section__title {
+      font-family: var(--font-display);
+      font-variation-settings: 'opsz' 144, 'SOFT' 20;
+      font-weight: 340;
+      font-size: clamp(36px, 5vw, 64px);
+      letter-spacing: -0.03em;
+      line-height: 1;
+      margin: 0 0 16px;
+      max-width: 20ch;
+    }
+    .section__title em {
+      font-style: italic;
+      font-variation-settings: 'opsz' 144, 'SOFT' 90;
+      color: var(--vermillion-d);
+    }
+    .section__lead {
+      font-family: var(--font-body);
+      font-size: 17px;
+      color: var(--ink-soft);
+      max-width: 55ch;
+      margin: 0 0 64px;
+    }
+
+    .log {
+      border-top: 1px solid var(--ink);
+      border-bottom: 1px solid var(--ink);
+    }
+    .log__row {
+      display: grid;
+      grid-template-columns: 86px 110px 1fr auto;
+      gap: 32px;
+      align-items: start;
+      padding: 28px 8px;
+      border-bottom: 1px solid var(--rule);
+      position: relative;
+      transition: background 0.25s ease;
+    }
+    .log__row:last-child { border-bottom: 0; }
+    .log__row:hover {
+      background: color-mix(in oklab, var(--vermillion) 5%, transparent);
+    }
+    .log__row:hover .log__num { color: var(--vermillion-d); }
+    .log__row:hover .log__title em {
+      font-variation-settings: 'opsz' 144, 'SOFT' 100;
+    }
+
+    .log__num {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.2em;
+      color: var(--ink-mute);
+      padding-top: 8px;
+      transition: color 0.25s ease;
+    }
+    .log__stamp {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--paper);
+      background: var(--ink);
+      padding: 5px 8px;
+      justify-self: start;
+      margin-top: 6px;
+      white-space: nowrap;
+    }
+    .log__stamp--warm { background: var(--vermillion); }
+    .log__stamp--cool { background: var(--teal-deep); }
+
+    .log__title {
+      font-family: var(--font-display);
+      font-variation-settings: 'opsz' 144, 'SOFT' 35;
+      font-weight: 400;
+      font-size: 30px;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin: 0 0 10px;
+    }
+    .log__title em {
+      font-style: italic;
+      color: var(--vermillion-d);
+      transition: font-variation-settings 0.35s ease;
+    }
+    .log__body {
+      font-family: var(--font-body);
+      font-size: 16px;
+      color: var(--ink-soft);
+      margin: 0;
+      max-width: 56ch;
+    }
+
+    .log__metric {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-mute);
+      text-align: right;
+      padding-top: 10px;
+      min-width: 110px;
+    }
+    .log__metric b {
+      display: block;
+      font-family: var(--font-display);
+      font-variation-settings: 'opsz' 36, 'SOFT' 20;
+      font-weight: 500;
+      font-size: 22px;
+      color: var(--ink);
+      letter-spacing: -0.02em;
+      margin-bottom: 2px;
+    }
+
+    @media (max-width: 820px) {
+      .log__row {
+        grid-template-columns: 60px 1fr;
+        gap: 12px 18px;
+      }
+      .log__stamp { grid-column: 2; justify-self: start; }
+      .log__body, .log__title { grid-column: 2; }
+      .log__metric { grid-column: 2; text-align: left; padding-top: 4px; }
+    }
+
+    /* ===== 06 Pull quotes ===== */
+    .pullquotes {
+      padding: 120px 0;
+      background: var(--ink);
+      color: var(--paper-soft);
+      position: relative;
+      overflow: hidden;
+    }
+    .pullquotes::before {
+      content: ''; position: absolute; inset: 0;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.06 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+      pointer-events: none;
+      mix-blend-mode: screen;
+      opacity: 0.5;
+    }
+    .pullquotes .section__eyebrow { color: var(--vermillion); }
+    .pullquotes .section__eyebrow span { color: color-mix(in oklab, var(--paper-soft) 50%, transparent); }
+    .pullquotes .section__title { color: var(--paper); }
+    .pullquotes .section__title em { color: var(--vermillion); }
+
+    .pullquotes__grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr 1fr;
+      gap: 40px;
+      margin-top: 56px;
+    }
+    @media (max-width: 900px) {
+      .pullquotes__grid { grid-template-columns: 1fr; gap: 32px; }
+    }
+    .pull {
+      border-top: 1px solid color-mix(in oklab, var(--paper) 25%, transparent);
+      padding-top: 24px;
+      position: relative;
+    }
+    .pull__mark {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-variation-settings: 'opsz' 144, 'SOFT' 100;
+      font-size: 90px;
+      line-height: 0.5;
+      color: var(--vermillion);
+      display: block;
+      margin-bottom: 12px;
+    }
+    .pull__text {
+      font-family: var(--font-display);
+      font-variation-settings: 'opsz' 36, 'SOFT' 40;
+      font-weight: 360;
+      font-size: 22px;
+      line-height: 1.3;
+      letter-spacing: -0.015em;
+      margin: 0 0 24px;
+    }
+    .pull--lead .pull__text {
+      font-size: 32px;
+      font-variation-settings: 'opsz' 96, 'SOFT' 30;
+    }
+    .pull__text em {
+      font-style: italic;
+      color: var(--vermillion);
+    }
+    .pull__by {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: color-mix(in oklab, var(--paper) 60%, transparent);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .pull__by b { color: var(--paper); font-weight: 500; }
+    .pull__by::before {
+      content: ''; width: 22px; height: 1px; background: var(--vermillion);
+    }
+
+    /* ===== 07 Spec sheet ===== */
+    .spec { padding: 120px 0 110px; }
+
+    .spec__header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: end;
+      gap: 24px;
+      margin-bottom: 48px;
+    }
+    @media (max-width: 720px) {
+      .spec__header { grid-template-columns: 1fr; }
+    }
+    .spec__toggle {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      display: inline-flex; gap: 0;
+      border: 1px solid var(--ink);
+    }
+    .spec__toggle button {
+      border: 0;
+      background: transparent;
+      padding: 10px 16px;
+      font: inherit;
+      color: var(--ink);
+      cursor: pointer;
+      border-right: 1px solid var(--ink);
+    }
+    .spec__toggle button:last-child { border-right: 0; }
+    .spec__toggle button[aria-pressed="true"] {
+      background: var(--ink); color: var(--paper);
+    }
+
+    .spec__table {
+      border-top: 2px solid var(--ink);
+      border-bottom: 2px solid var(--ink);
+      display: grid;
+      grid-template-columns: 1.3fr repeat(3, 1fr);
+    }
+    @media (max-width: 820px) {
+      .spec__table { grid-template-columns: 1fr; }
+    }
+    .spec__cell {
+      padding: 20px 18px;
+      border-right: 1px solid var(--rule);
+      border-bottom: 1px solid var(--rule);
+      font-family: var(--font-body);
+      font-size: 15px;
+      color: var(--ink-soft);
+      position: relative;
+    }
+    .spec__cell:last-child { border-right: 0; }
+    @media (max-width: 820px) {
+      .spec__cell { border-right: 0; }
+    }
+    .spec__cell--label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink-mute);
+      background: var(--paper-soft);
+    }
+    .spec__cell--plan {
+      background: var(--paper-soft);
+      padding-top: 28px; padding-bottom: 28px;
+    }
+    .spec__cell--plan h3 {
+      font-family: var(--font-display);
+      font-variation-settings: 'opsz' 72, 'SOFT' 25;
+      font-weight: 500;
+      font-size: 28px;
+      letter-spacing: -0.02em;
+      margin: 0 0 4px;
+    }
+    .spec__cell--plan .hint {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink-mute);
+      margin-bottom: 18px;
+    }
+    .spec__cell--plan .price {
+      font-family: var(--font-display);
+      font-variation-settings: 'opsz' 144, 'SOFT' 50;
+      font-weight: 400;
+      font-size: 46px;
+      line-height: 1;
+      letter-spacing: -0.035em;
+      color: var(--ink);
+      display: flex; align-items: baseline; gap: 6px;
+    }
+    .spec__cell--plan .price small {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      color: var(--ink-mute);
+      font-weight: 400;
+    }
+    .spec__cell--feat { text-align: center; font-size: 0; }
+    @media (max-width: 820px) {
+      .spec__cell--feat { text-align: left; }
+    }
+    .spec__cell--feat.yes::after {
+      content: '✓';
+      color: var(--vermillion);
+      font-weight: 700;
+      font-size: 18px;
+    }
+    .spec__cell--feat.no::after {
+      content: '—';
+      color: var(--ink-mute);
+      font-size: 18px;
+    }
+    .spec__cell--value {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--ink);
+      text-align: center;
+      letter-spacing: 0.02em;
+    }
+    @media (max-width: 820px) {
+      .spec__cell--value { text-align: left; }
+      .spec__cell--value::before,
+      .spec__cell--feat::before {
+        content: attr(data-label);
+        display: block;
+        font-family: var(--font-mono);
+        font-size: 10px; letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--vermillion);
+        margin-bottom: 4px;
+      }
+      .spec__cell--feat::before { font-size: 10px; }
+    }
+
+    .spec__cta {
+      padding-top: 24px; padding-bottom: 28px;
+      text-align: center;
+    }
+    .spec__cta .btn { width: 100%; justify-content: center; }
+    .spec__note {
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--ink-mute);
+      margin-top: 24px;
+    }
+
+    /* ===== 08 Finale ===== */
+    .finale {
+      position: relative;
+      padding: 140px 0 120px;
+      background:
+        radial-gradient(ellipse at 20% 20%, color-mix(in oklab, var(--vermillion) 20%, transparent), transparent 50%),
+        radial-gradient(ellipse at 80% 80%, color-mix(in oklab, var(--teal) 18%, transparent), transparent 55%),
+        var(--paper-deep);
+      overflow: hidden;
+    }
+    .finale::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(to right, color-mix(in oklab, var(--ink) 8%, transparent) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+      opacity: 0.6;
+    }
+    .finale__inner {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1.3fr 1fr;
+      align-items: center;
+      gap: 60px;
+    }
+    @media (max-width: 860px) {
+      .finale__inner { grid-template-columns: 1fr; }
+    }
+    .finale__heading {
+      font-family: var(--font-display);
+      font-variation-settings: 'opsz' 144, 'SOFT' 15;
+      font-weight: 320;
+      font-size: clamp(44px, 6vw, 88px);
+      line-height: 0.94;
+      letter-spacing: -0.035em;
+      margin: 0 0 22px;
+    }
+    .finale__heading em {
+      font-style: italic;
+      font-variation-settings: 'opsz' 144, 'SOFT' 100;
+      color: var(--vermillion-d);
+    }
+    .finale__lead {
+      font-family: var(--font-body);
+      font-size: 18px;
+      color: var(--ink-soft);
+      max-width: 48ch;
+      margin: 0 0 28px;
+    }
+    .finale__ctas { display: flex; flex-wrap: wrap; gap: 14px; }
+
+    .stamp__wrap {
+      position: relative;
+      display: grid; place-items: center;
+      width: 260px; height: 260px;
+      justify-self: end;
+    }
+    @media (max-width: 860px) { .stamp__wrap { justify-self: center; } }
+    .stamp {
+      position: absolute; inset: 0;
+      color: var(--vermillion);
+      animation: stamp-spin 30s linear infinite;
+    }
+    @keyframes stamp-spin { to { transform: rotate(360deg); } }
+    .stamp::before {
+      content: '';
+      position: absolute; inset: 20px;
+      border: 1.5px solid currentColor;
+      border-radius: 50%;
+    }
+    .stamp::after {
+      content: '';
+      position: absolute; inset: 36px;
+      border: 1px dashed currentColor;
+      border-radius: 50%;
+      opacity: 0.5;
+    }
+    .stamp svg {
+      width: 100%; height: 100%;
+      font-family: var(--font-mono);
+      font-size: 11px; letter-spacing: 0.28em;
+      fill: currentColor;
+      text-transform: uppercase;
+    }
+    .stamp__wrap::before,
+    .stamp__wrap::after {
+      content: '';
+      position: absolute;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--vermillion);
+    }
+    .stamp__wrap::before { top: 8px; left: 50%; transform: translateX(-50%); }
+    .stamp__wrap::after  { bottom: 8px; left: 50%; transform: translateX(-50%); }
+    .stamp__core {
+      position: relative;
+      z-index: 2;
+      display: grid; place-items: center;
+      text-align: center;
+      font-family: var(--font-display);
+      font-style: italic;
+      font-variation-settings: 'opsz' 144, 'SOFT' 100;
+      font-weight: 400;
+      font-size: 44px;
+      letter-spacing: -0.02em;
+      line-height: 0.95;
+      color: var(--vermillion);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .stamp { animation: none; }
+      .colophon__ticker-track { animation: none; }
+      .cursor { animation: none; }
+    }
+
+    /* ===== 09 Footer ===== */
+    .footer {
+      background: var(--paper-soft);
+      border-top: 1px solid var(--rule);
+      padding: 72px 0 32px;
+    }
+    .footer__top {
+      display: grid;
+      grid-template-columns: 1.6fr 1fr 1fr 1fr 1fr;
+      gap: 40px;
+      padding-bottom: 56px;
+      border-bottom: 1px solid var(--rule);
+    }
+    @media (max-width: 860px) {
+      .footer__top { grid-template-columns: repeat(2, 1fr); gap: 28px; }
+      .footer__brand { grid-column: span 2; }
+    }
+    .footer__brand .wordmark { font-size: 30px; }
+    .footer__tag {
+      font-family: var(--font-display);
+      font-variation-settings: 'opsz' 36, 'SOFT' 50;
+      font-style: italic;
+      font-size: 18px;
+      color: var(--ink-soft);
+      margin: 18px 0 22px;
+      max-width: 36ch;
+    }
+    .footer__issn {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--ink-mute);
+      border: 1px solid var(--rule);
+      padding: 8px 12px;
+      display: inline-block;
+    }
+    .footer__col h5 {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--vermillion-d);
+      margin: 0 0 18px;
+      padding-bottom: 10px;
+      border-bottom: 1px dashed var(--rule);
+    }
+    .footer__col ul { list-style: none; margin: 0; padding: 0; }
+    .footer__col li { padding: 5px 0; }
+    .footer__col a {
+      font-family: var(--font-body);
+      font-size: 15.5px;
+      color: var(--ink-soft);
+      transition: color 0.2s ease, padding-left 0.25s ease;
+      display: inline-block;
+    }
+    .footer__col a:hover {
+      color: var(--vermillion-d);
+      padding-left: 4px;
+    }
+    .footer__bottom {
+      display: flex; justify-content: space-between; align-items: center;
+      padding-top: 24px;
+      gap: 24px; flex-wrap: wrap;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-mute);
+    }
+    .footer__bottom b { color: var(--ink); font-weight: 500; }
+    .footer__bottom .dot { color: var(--vermillion); }
+
+    /* reveal on load */
+    .reveal { opacity: 0; transform: translateY(14px); }
+    .reveal.in {
+      opacity: 1; transform: none;
+      transition: opacity 0.9s cubic-bezier(.2,.8,.2,1), transform 0.9s cubic-bezier(.2,.8,.2,1);
+    }
+    .reveal.in.d1 { transition-delay: 0.08s; }
+    .reveal.in.d2 { transition-delay: 0.16s; }
+    .reveal.in.d3 { transition-delay: 0.24s; }
+    .reveal.in.d4 { transition-delay: 0.32s; }
+
+    ::selection { background: var(--vermillion); color: var(--paper); }
+
+    @media (max-width: 720px) {
+      .wrap { padding: 0 20px; }
+      .nav { display: none; }
+      .auth .btn--ghost { display: none; }
+      .colophon__row { padding: 8px 20px; gap: 16px; }
+      .hero { padding: 56px 0 48px; }
+      .hero__meta { grid-template-columns: 1fr 1fr; }
+      .manifest, .spec, .pullquotes, .finale { padding-top: 80px; padding-bottom: 80px; }
+      .stamp__wrap { width: 200px; height: 200px; }
+      .stamp__core { font-size: 32px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+
+    <!-- 01 Colophon -->
+    <div class="colophon">
+      <div class="colophon__row">
+        <span class="colophon__counter">EDITION №&nbsp;<b>02.24</b> · 甲辰年</span>
+        <div class="colophon__ticker" aria-hidden="true">
+          <div class="colophon__ticker-track">
+            <span>LIVE DEPLOYMENT COUNTER <b id="liveCount">3,147,208</b></span>
+            <span>MEAN TIME TO PROD · 00:04:37</span>
+            <span>ROLLBACKS PREVENTED · 12,904</span>
+            <span>EDGE NODES ONLINE · 12 / 12</span>
+            <span>SOC2 TYPE II · CERTIFIED</span>
+            <span>AVG P95 LATENCY · 47 ms</span>
+            <span>BUILDS TODAY · 2,418</span>
+            <span>ISSN 2842 · 0044 (ONLINE)</span>
+          </div>
+        </div>
+        <span>FRI · 23 APR · 2026</span>
+      </div>
+    </div>
+
+    <!-- 02 Masthead -->
+    <header class="masthead">
+      <div class="wrap masthead__row">
+        <a href="#" class="wordmark" aria-label="DeploySea">
+          <span class="wordmark__dot" aria-hidden="true"></span>
+          <span class="wordmark__name">Deploy<em>Sea</em></span>
+          <span class="wordmark__ref">VOL. II</span>
+        </a>
+        <nav class="nav" aria-label="主导航">
+          <a href="#manifest">功能 <sup>01</sup></a>
+          <a href="#field">案例 <sup>02</sup></a>
+          <a href="#spec">定价 <sup>03</sup></a>
+          <a href="#finale">试用 <sup>04</sup></a>
+        </nav>
+        <div class="auth">
+          <a class="btn btn--ghost" href="#">登录</a>
+          <a class="btn btn--solid" href="#finale">
+            开始部署 <span class="btn__arrow">→</span>
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <!-- 03 Hero -->
+    <section class="hero">
+      <div class="hero__rail" aria-hidden="true"></div>
+      <div class="wrap">
+        <div class="hero__layout">
+          <div>
+            <p class="hero__tag reveal in">FIELD MANUAL / 02 · 2026 春季卷</p>
+
+            <h1 class="hero__headline reveal in d1">
+              让 <span class="swash">Demo</span><br />
+              <span class="strike">熬夜配 YAML</span><br />
+              <span class="zh">5 分钟发到生产线。</span>
+            </h1>
+
+            <p class="hero__lead reveal in d2">
+              DeploySea 替你处理环境、密钥、回滚、监控的每一根神经。<br />
+              把<em> 最后一公里 </em>从一个周末压缩到一次呼吸。
+            </p>
+
+            <div class="hero__ctas reveal in d3">
+              <a class="btn btn--solid" href="#finale">
+                免费试用 14 天 <span class="btn__arrow">→</span>
+              </a>
+              <a class="btn" href="#manifest">
+                查看工程手册
+              </a>
+            </div>
+
+            <dl class="hero__meta reveal in d4">
+              <div>
+                <dt>平均部署</dt>
+                <dd>30<sup>s</sup></dd>
+              </div>
+              <div>
+                <dt>接入团队</dt>
+                <dd>520+</dd>
+              </div>
+              <div>
+                <dt>P95 延迟</dt>
+                <dd>47<sup>ms</sup></dd>
+              </div>
+            </dl>
+          </div>
+
+          <div class="reveal in d2">
+            <div class="plate">
+              <span class="plate__corner plate__corner--tl" aria-hidden="true"></span>
+              <span class="plate__corner plate__corner--tr" aria-hidden="true"></span>
+              <span class="plate__corner plate__corner--bl" aria-hidden="true"></span>
+              <span class="plate__corner plate__corner--br" aria-hidden="true"></span>
+
+              <div class="plate__caption">
+                <span>FIG. 01 · DEPLOYMENT TRACE</span>
+                <span><b>LIVE</b> · prod-tokyo-02</span>
+              </div>
+
+              <div class="terminal" role="img" aria-label="终端部署日志演示">
+                <div class="terminal__bar">
+                  <i></i><i></i><i></i>
+                  <small>deploysea · tty · 120 × 36</small>
+                </div>
+                <div class="terminal__body">
+                  <span class="terminal__line"><span class="p">ameng@studio</span><span class="c">:</span><span class="k">~/demo-app</span> $ deploysea push <span class="w">--env=prod</span></span>
+                  <span class="terminal__line"><span class="mute">[00:00]</span> → resolving dependency graph <span class="ok">✓</span></span>
+                  <span class="terminal__line"><span class="mute">[00:04]</span> → building image <span class="k">sha256:9f1a…b02</span> <span class="ok">✓</span></span>
+                  <span class="terminal__line"><span class="mute">[00:11]</span> → running migrations <span class="c">(3 applied)</span> <span class="ok">✓</span></span>
+                  <span class="terminal__line"><span class="mute">[00:18]</span> → provisioning 3 edge regions <span class="ok">✓</span></span>
+                  <span class="terminal__line"><span class="mute">[00:24]</span> → healthcheck · /ready · 200 OK <span class="ok">✓</span></span>
+                  <span class="terminal__line terminal__line--highlight">
+                    ◆ &nbsp;live · <span class="k">https://app.example.com</span> · 27.4s
+                    <span class="cursor" aria-hidden="true"></span>
+                  </span>
+                </div>
+              </div>
+
+              <span class="sticky sticky--a">
+                NO&nbsp;&nbsp;YAML<br /><b>EDITED</b>
+              </span>
+              <span class="sticky sticky--b">
+                AUTO&nbsp;ROLLBACK<br /><b>ARMED</b>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 04 Field Report -->
+    <section class="field" id="field">
+      <div class="wrap">
+        <p class="field__label"><span>Field Report · 已被这些团队写进日常</span></p>
+        <div class="field__row">
+          <span class="field__brand">Acme&nbsp;Foundry</span>
+          <span class="field__brand">Nova&nbsp;&amp;&nbsp;Co.</span>
+          <span class="field__brand">Stellar&nbsp;Press</span>
+          <span class="field__brand">Quantum&nbsp;Atelier</span>
+          <span class="field__brand">Orbit&nbsp;Labs</span>
+          <span class="field__brand">Pixel&nbsp;Union</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 05 Manifest / features -->
+    <section class="manifest" id="manifest">
+      <div class="wrap">
+        <p class="section__eyebrow">部署工程清单 <span>/ Cap. 01 — 06</span></p>
+        <h2 class="section__title">
+          把每一次发版<br />
+          写成<em>一句诗。</em>
+        </h2>
+        <p class="section__lead">
+          自动化不是让你消失，而是让你在合适的地方优雅登场。六件事，我们替你一次说清。
+        </p>
+
+        <div class="log">
+          <article class="log__row">
+            <span class="log__num">01 / 06</span>
+            <span class="log__stamp log__stamp--warm">SPEED</span>
+            <div>
+              <h3 class="log__title">秒级 <em>增量</em> 部署</h3>
+              <p class="log__body">
+                基于内容寻址的增量构建，平均 30 秒完成一次从推送到全球生效；你不需要知道 30 秒怎么来的。
+              </p>
+            </div>
+            <div class="log__metric"><b>00:30</b>avg. rollout</div>
+          </article>
+
+          <article class="log__row">
+            <span class="log__num">02 / 06</span>
+            <span class="log__stamp">SAFETY</span>
+            <div>
+              <h3 class="log__title">一键 <em>回滚</em>，从不犹豫</h3>
+              <p class="log__body">
+                出事的那一分钟比你想象得更长。按下回滚，上一个稳定版本在 8 秒内重新接手流量。
+              </p>
+            </div>
+            <div class="log__metric"><b>00:08</b>to safe state</div>
+          </article>
+
+          <article class="log__row">
+            <span class="log__num">03 / 06</span>
+            <span class="log__stamp log__stamp--cool">OBSERV.</span>
+            <div>
+              <h3 class="log__title">监控 <em>不再是一面墙</em></h3>
+              <p class="log__body">
+                CPU、内存、错误率、关键日志、慢查询——全部整理成一条叙事时间轴，先给你结论再给你证据。
+              </p>
+            </div>
+            <div class="log__metric"><b>1 / 1</b>pane of glass</div>
+          </article>
+
+          <article class="log__row">
+            <span class="log__num">04 / 06</span>
+            <span class="log__stamp">SECURITY</span>
+            <div>
+              <h3 class="log__title">合规 <em>内建</em>，不外挂</h3>
+              <p class="log__body">
+                自动 HTTPS、密钥轮转、SOC2 Type II、SSO / SAML。第一天上线就是合规的，不是上线之后再补的。
+              </p>
+            </div>
+            <div class="log__metric"><b>SOC2</b>type ii certified</div>
+          </article>
+
+          <article class="log__row">
+            <span class="log__num">05 / 06</span>
+            <span class="log__stamp log__stamp--warm">GLOBAL</span>
+            <div>
+              <h3 class="log__title">全球 <em>12 节点</em> 贴身加速</h3>
+              <p class="log__body">
+                智能路由自动调度到最近的边缘节点，东京到圣保罗都只有一个握手的时间；用户不知道，但他们会留下。
+              </p>
+            </div>
+            <div class="log__metric"><b>47ms</b>p95 latency</div>
+          </article>
+
+          <article class="log__row">
+            <span class="log__num">06 / 06</span>
+            <span class="log__stamp log__stamp--cool">TEAM</span>
+            <div>
+              <h3 class="log__title">协作 <em>不靠喊话</em></h3>
+              <p class="log__body">
+                PR 自动生成预览环境，评审记录、操作审计、成本归属内嵌其中——多人部署不再是一门口头技艺。
+              </p>
+            </div>
+            <div class="log__metric"><b>∞</b>preview envs</div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- 06 Pull quotes -->
+    <section class="pullquotes">
+      <div class="wrap">
+        <p class="section__eyebrow">Testimonial Dispatch <span>/ 三段未经修饰的回信</span></p>
+        <h2 class="section__title">
+          他们说 DeploySea <em>像空气。</em>
+        </h2>
+
+        <div class="pullquotes__grid">
+          <figure class="pull pull--lead">
+            <span class="pull__mark" aria-hidden="true">“</span>
+            <blockquote class="pull__text">
+              以前一次发版要<em>半小时</em>，现在 30 秒搞定。团队的发版焦虑消失了，连周五下午都敢推代码。
+            </blockquote>
+            <figcaption class="pull__by"><b>林&nbsp;老师</b>&nbsp;·&nbsp;某 SaaS 技术负责人</figcaption>
+          </figure>
+
+          <figure class="pull">
+            <span class="pull__mark" aria-hidden="true">“</span>
+            <blockquote class="pull__text">
+              回滚按钮救了我<em>两次</em>大事故。光这一个功能就值这个价——其余都是赠品。
+            </blockquote>
+            <figcaption class="pull__by"><b>王&nbsp;工</b>&nbsp;·&nbsp;跨境电商 DevOps</figcaption>
+          </figure>
+
+          <figure class="pull">
+            <span class="pull__mark" aria-hidden="true">“</span>
+            <blockquote class="pull__text">
+              从 Demo 到上线<em>只花了一个下午</em>。独立开发者的孤独，被一个命令终结。
+            </blockquote>
+            <figcaption class="pull__by"><b>A梦</b>&nbsp;·&nbsp;独立开发者 / 本场嘉宾</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- 07 Spec sheet pricing -->
+    <section class="spec" id="spec">
+      <div class="wrap">
+        <div class="spec__header">
+          <div>
+            <p class="section__eyebrow">Specification Sheet <span>/ Rev. 02 · 含税</span></p>
+            <h2 class="section__title">
+              没有 <em>彩色表格</em><br />
+              的价格。
+            </h2>
+          </div>
+          <div class="spec__toggle" role="tablist" aria-label="计费周期">
+            <button type="button" aria-pressed="true">月付</button>
+            <button type="button" aria-pressed="false">年付 · −2 个月</button>
+          </div>
+        </div>
+
+        <div class="spec__table">
+          <div class="spec__cell spec__cell--label">&nbsp;</div>
+          <div class="spec__cell spec__cell--plan">
+            <div class="hint">SOLO · 个人</div>
+            <h3>Draft</h3>
+            <div class="price">¥0<small>/月</small></div>
+          </div>
+          <div class="spec__cell spec__cell--plan" style="background: color-mix(in oklab, var(--vermillion) 9%, var(--paper-soft));">
+            <div class="hint" style="color: var(--vermillion-d);">TEAM · 5–20 人 · 推荐</div>
+            <h3>Press</h3>
+            <div class="price">¥199<small>/月</small></div>
+          </div>
+          <div class="spec__cell spec__cell--plan">
+            <div class="hint">ENT · 企业</div>
+            <h3>Atelier</h3>
+            <div class="price" style="font-size: 28px;">联系我们<small>&nbsp;</small></div>
+          </div>
+
+          <div class="spec__cell spec__cell--label">项目数</div>
+          <div class="spec__cell spec__cell--value" data-label="Draft">1 个</div>
+          <div class="spec__cell spec__cell--value" data-label="Press">无限</div>
+          <div class="spec__cell spec__cell--value" data-label="Atelier">无限 · 私有化</div>
+
+          <div class="spec__cell spec__cell--label">每月部署</div>
+          <div class="spec__cell spec__cell--value" data-label="Draft">100 次</div>
+          <div class="spec__cell spec__cell--value" data-label="Press">无限</div>
+          <div class="spec__cell spec__cell--value" data-label="Atelier">无限 + SLA</div>
+
+          <div class="spec__cell spec__cell--label">预览环境</div>
+          <div class="spec__cell spec__cell--value" data-label="Draft">3</div>
+          <div class="spec__cell spec__cell--value" data-label="Press">无限</div>
+          <div class="spec__cell spec__cell--value" data-label="Atelier">无限</div>
+
+          <div class="spec__cell spec__cell--label">操作审计</div>
+          <div class="spec__cell spec__cell--feat no" data-label="Draft"></div>
+          <div class="spec__cell spec__cell--feat yes" data-label="Press"></div>
+          <div class="spec__cell spec__cell--feat yes" data-label="Atelier"></div>
+
+          <div class="spec__cell spec__cell--label">SSO / SAML</div>
+          <div class="spec__cell spec__cell--feat no" data-label="Draft"></div>
+          <div class="spec__cell spec__cell--feat no" data-label="Press"></div>
+          <div class="spec__cell spec__cell--feat yes" data-label="Atelier"></div>
+
+          <div class="spec__cell spec__cell--label">专属客户经理</div>
+          <div class="spec__cell spec__cell--feat no" data-label="Draft"></div>
+          <div class="spec__cell spec__cell--feat no" data-label="Press"></div>
+          <div class="spec__cell spec__cell--feat yes" data-label="Atelier"></div>
+
+          <div class="spec__cell spec__cell--label">&nbsp;</div>
+          <div class="spec__cell spec__cta"><a href="#" class="btn">开始使用</a></div>
+          <div class="spec__cell spec__cta" style="background: color-mix(in oklab, var(--vermillion) 9%, var(--paper-soft));">
+            <a href="#finale" class="btn btn--solid">免费试用 →</a>
+          </div>
+          <div class="spec__cell spec__cta"><a href="#" class="btn">联系销售</a></div>
+        </div>
+
+        <p class="spec__note">附注 · 所有计划含 SOC2 Type II · 随时可取消 · 数据 30 天内可导出</p>
+      </div>
+    </section>
+
+    <!-- 08 Finale / stamp CTA -->
+    <section class="finale" id="finale">
+      <div class="wrap finale__inner">
+        <div>
+          <p class="section__eyebrow">Final Dispatch <span>/ 今晚就让它上线</span></p>
+          <h2 class="finale__heading">
+            今晚<em>合上电脑前</em>，<br />
+            它已经在跑。
+          </h2>
+          <p class="finale__lead">
+            14 天免费试用 · 无需信用卡 · 仅需一个仓库。<br />
+            下一个访客，来自哪个时区，由你决定。
+          </p>
+          <div class="finale__ctas">
+            <a class="btn btn--solid" href="#">
+              立即部署 <span class="btn__arrow">→</span>
+            </a>
+            <a class="btn" href="#manifest">
+              预约 15 分钟 demo
+            </a>
+          </div>
+        </div>
+
+        <div class="stamp__wrap" aria-hidden="true">
+          <div class="stamp">
+            <svg viewBox="0 0 260 260">
+              <defs>
+                <path id="circle" d="M 130,130 m -96,0 a 96,96 0 1,1 192,0 a 96,96 0 1,1 -192,0" />
+              </defs>
+              <text>
+                <textPath href="#circle" startOffset="0">
+                  DEPLOYSEA · FIELD MANUAL · EST. 2024 · DEPLOY WITH GRACE ·
+                </textPath>
+              </text>
+            </svg>
+          </div>
+          <span class="stamp__core">发<br/>行<br/>人</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 09 Footer -->
+    <footer class="footer">
+      <div class="wrap">
+        <div class="footer__top">
+          <div class="footer__brand">
+            <a href="#" class="wordmark">
+              <span class="wordmark__dot" aria-hidden="true"></span>
+              <span class="wordmark__name">Deploy<em>Sea</em></span>
+            </a>
+            <p class="footer__tag">
+              从 Demo 到正式产品，中间那段路应该消失。
+            </p>
+            <span class="footer__issn">ISSN 2842 · 0044</span>
+          </div>
+
+          <div class="footer__col">
+            <h5>产品</h5>
+            <ul>
+              <li><a href="#">功能清单</a></li>
+              <li><a href="#">定价</a></li>
+              <li><a href="#">变更日志</a></li>
+              <li><a href="#">路线图</a></li>
+            </ul>
+          </div>
+          <div class="footer__col">
+            <h5>资源</h5>
+            <ul>
+              <li><a href="#">工程手册</a></li>
+              <li><a href="#">博客</a></li>
+              <li><a href="#">社区</a></li>
+              <li><a href="#">案例</a></li>
+            </ul>
+          </div>
+          <div class="footer__col">
+            <h5>公司</h5>
+            <ul>
+              <li><a href="#">关于</a></li>
+              <li><a href="#">加入我们</a></li>
+              <li><a href="#">联系</a></li>
+              <li><a href="#">合作伙伴</a></li>
+            </ul>
+          </div>
+          <div class="footer__col">
+            <h5>合规</h5>
+            <ul>
+              <li><a href="#">隐私政策</a></li>
+              <li><a href="#">服务条款</a></li>
+              <li><a href="#">SOC2 报告</a></li>
+              <li><a href="#">安全中心</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="footer__bottom">
+          <span>© 2026 <b>DeploySea</b> — printed in Shanghai, served from twelve edge nodes.</span>
+          <span><span class="dot">◆</span> v2.0 · Editorial Engineering</span>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+
+  <script>
+    // Live deployment counter — a slow plausible tick.
+    (function () {
+      const el = document.getElementById('liveCount');
+      if (!el) return;
+      let n = parseInt(el.textContent.replace(/[^\d]/g, ''), 10) || 0;
+      const fmt = v => v.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      setInterval(() => {
+        n += 1 + Math.floor(Math.random() * 3);
+        el.textContent = fmt(n);
+      }, 2200);
+    })();
+
+    // Reveal on scroll.
+    (function () {
+      if (!('IntersectionObserver' in window)) return;
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            e.target.classList.add('in');
+            io.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.12 });
+      document.querySelectorAll('.reveal:not(.in)').forEach(el => io.observe(el));
+    })();
+
+    // Billing toggle.
+    (function () {
+      const toggle = document.querySelector('.spec__toggle');
+      if (!toggle) return;
+      const buttons = toggle.querySelectorAll('button');
+      const priceEls = document.querySelectorAll('.spec__cell--plan .price');
+      const monthly = [
+        { amt: '¥0', unit: '/月' },
+        { amt: '¥199', unit: '/月' },
+        { amt: '联系我们', unit: ' ' }
+      ];
+      const yearly = [
+        { amt: '¥0', unit: '/年' },
+        { amt: '¥1,990', unit: '/年' },
+        { amt: '联系我们', unit: ' ' }
+      ];
+      buttons.forEach((b, idx) => {
+        b.addEventListener('click', () => {
+          buttons.forEach(x => x.setAttribute('aria-pressed', 'false'));
+          b.setAttribute('aria-pressed', 'true');
+          const source = idx === 1 ? yearly : monthly;
+          priceEls.forEach((p, i) => {
+            const v = source[i];
+            p.innerHTML = v.amt + '<small>' + v.unit + '</small>';
+            p.style.fontSize = v.amt === '联系我们' ? '28px' : '';
+          });
+        });
+      });
+    })();
+  </script>
+  <script src="../_overlay.js" data-version="v2"></script>
+</body>
+</html>

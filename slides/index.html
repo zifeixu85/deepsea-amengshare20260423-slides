@@ -1,0 +1,1889 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>从 Demo 到正式产品 · A梦</title>
+  <meta name="description" content="从 Demo 到正式产品——部署与调试实战。分享人：A梦。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@500;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./styles.css?v=13" />
+  <script>
+    // Apply theme before paint to avoid FOUC
+    (function () {
+      try {
+        var saved = localStorage.getItem('deepsea-slides-theme');
+        var theme = (saved === 'light' || saved === 'dark')
+          ? saved
+          : (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+        document.documentElement.setAttribute('data-theme', theme);
+      } catch (e) { document.documentElement.setAttribute('data-theme', 'dark'); }
+    })();
+  </script>
+</head>
+<body>
+  <div class="progress" id="progress"></div>
+
+  <header class="chrome-top">
+    <div class="chrome-top__left">
+      <span class="chrome-top__brand"><strong>从 Demo 到正式产品</strong> · A梦</span>
+    </div>
+    <div class="chrome-top__right">
+      <span class="chrome-top__section" id="section-pill">
+        <span class="swatch"></span><span id="section-name">OPEN</span>
+      </span>
+      <span class="chrome-top__counter"><span id="cur">01</span> / <span id="total">01</span></span>
+      <button class="theme-toggle" id="theme-toggle" aria-label="切换明暗主题 (T)" title="切换主题 (T)">
+        <span class="ico ico-light" aria-hidden="true">☀</span><span class="ico ico-dark" aria-hidden="true">☾</span>
+        <span class="theme-toggle__label theme-toggle__label--to-light">Light</span>
+        <span class="theme-toggle__label theme-toggle__label--to-dark">Dark</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="deck" id="deck" data-section="open">
+
+    <!-- ==================== 01 · COVER ==================== -->
+    <section class="slide cover is-active" data-section="open" data-overview="01 · 封面">
+      <header class="cover__top">
+        <div><span class="dot-pulse"></span><strong>LIVE</strong> · 技术分享 · Vol.01</div>
+        <div>2026.04.23</div>
+      </header>
+      <div class="cover__main">
+        <span class="eyebrow">Deployment &amp; Debugging in Practice</span>
+        <h1 class="cover__title">
+          从 <span class="accent">Demo</span><br />
+          <span class="arrow">→</span> 到<span class="accent">正式产品</span>
+        </h1>
+        <p class="cover__subtitle">
+          部署与调试实战
+        </p>
+        <aside class="cover__terminal terminal" aria-hidden="true">
+          <span><span class="prompt">$</span> <span class="cmd-text">deploy --env=prod</span></span><br/>
+          → build … <span class="ok">ok</span><br/>
+          → migrate … <span class="ok">ok</span><br/>
+          → healthcheck … <span class="ok">ok</span><br/>
+          <span class="prompt">$</span> _
+        </aside>
+      </div>
+      <footer class="cover__bottom">
+        <div class="cover__meta">
+          <span class="label">Speaker</span>
+          <span class="value">A梦<span class="role">／ 一期学员</span></span>
+        </div>
+        <div class="cover__meta cover__meta--right">
+          <span class="label">Session</span>
+          <span class="value">2026.04.23 · Vol.01</span>
+        </div>
+      </footer>
+    </section>
+
+    <!-- ==================== 02 · 自我介绍 ==================== -->
+    <section class="slide" data-section="open" data-overview="02 · 自我介绍">
+      <div class="intro">
+        <div class="intro__avatar">
+          <img src="./avatar.png" alt="A梦 头像" />
+        </div>
+        <div>
+          <span class="eyebrow">Speaker</span>
+          <h2 class="intro__name">
+            A梦
+            <small>10 年交互设计 · 出海产品 · 黑客松三冠</small>
+          </h2>
+          <ul class="intro__bullets">
+            <li>
+              <div>
+                <strong>一期学员</strong>
+                <div class="meta">小排老师课程一期学员</div>
+              </div>
+            </li>
+            <li>
+              <div>
+                <strong>10 年+ 交互设计经验</strong>
+                <div class="meta">前阿里巴巴交互设计专家</div>
+              </div>
+            </li>
+            <li>
+              <div>
+                <strong>2024.10 起做出海网站</strong>
+                <div class="meta">已经获得持续收益，至今在迭代</div>
+              </div>
+            </li>
+            <li>
+              <div>
+                <strong>持续做自己的创业产品</strong>
+                <div class="meta">一边做一边把方法沉下来</div>
+              </div>
+            </li>
+            <li>
+              <div>
+                <strong>黑客松三冠</strong>
+                <div class="meta">基本都是一个人参赛</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 03 · 今天想分享什么 ==================== -->
+    <section class="slide" data-section="open" data-overview="03 · 今天想分享什么">
+      <div class="question">
+        <span class="question__pre">// today's topic</span>
+        <h2 class="question__big">
+          会用 AI 写页面之后，<br/>
+          真正卡住你的，<br/>
+          往往是<em>下一步</em>。
+        </h2>
+        <div class="question__list">
+          <div class="card">
+            <div class="card__num">01 / 调试</div>
+            <p class="card__title">写出来之后怎么继续打磨</p>
+            <p class="card__desc">从 demo 变成「更像产品的东西」，差的是哪几步。</p>
+          </div>
+          <div class="card">
+            <div class="card__num">02 / 上线</div>
+            <p class="card__title">怎么把它真正部署出去</p>
+            <p class="card__desc">本地跑通和真正上线，中间是两套问题。</p>
+          </div>
+          <div class="card">
+            <div class="card__num">03 / 维护</div>
+            <p class="card__title">怎么让它后续还能持续维护</p>
+            <p class="card__desc">不是上线就完了，是从此开始要每周面对它。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 04 · 课程地图回顾 ==================== -->
+    <section class="slide" data-section="open" data-overview="04 · 课程地图回顾">
+      <div class="course-map">
+        <div>
+          <span class="eyebrow">Recap · 课程地图</span>
+          <h2 class="title-h1" style="margin-top:1rem;">
+            先把<br/>课程<span style="color:var(--accent)">回顾一下</span>
+          </h2>
+          <p class="subtle" style="margin-top:1.2rem;font-size:1.02rem;line-height:1.55;max-width:30ch;">
+            不是重复讲，而是告诉你：<br/>
+            <strong style="color:var(--ink);">哪些已经讲过、今天会在哪一段往前推、哪些直播后回去补课最合算。</strong>
+          </p>
+        </div>
+        <div class="course-map__list">
+          <a class="course-link" href="https://scys.com/deepsea/2001/course/164?chapterId=10860" target="_blank" rel="noopener">
+            <span class="course-link__num">01</span>
+            <div>
+              <p class="course-link__title">实战进阶 3</p>
+              <span class="course-link__sub">数据库进阶 / 产品设计 / Bug 调试 / 部署上线 / 域名配置</span>
+            </div>
+            <span class="course-link__arrow">→</span>
+          </a>
+          <a class="course-link" href="https://scys.com/deepsea/2001/course/164?chapterId=11108" target="_blank" rel="noopener">
+            <span class="course-link__num">02</span>
+            <div>
+              <p class="course-link__title">实战进阶 4</p>
+              <span class="course-link__sub">Claude Code / MCP / Skills / 产品迭代 / 开源生态</span>
+            </div>
+            <span class="course-link__arrow">→</span>
+          </a>
+          <a class="course-link" href="https://scys.com/deepsea/2001/course/128?chapterId=5829&blockId=doxcnQayWK1NSLy0XoAiKjY7ih2" target="_blank" rel="noopener">
+            <span class="course-link__num">03</span>
+            <div>
+              <p class="course-link__title">老教程 · 部署到自己的服务器</p>
+              <span class="course-link__sub">Dokploy 部署的来龙去脉</span>
+            </div>
+            <span class="course-link__arrow">→</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 05 · 今天结构预览 ==================== -->
+    <section class="slide" data-section="open" data-overview="05 · 今天结构预览">
+      <div class="roadmap">
+        <div>
+          <span class="eyebrow">Today's Map</span>
+          <h2 class="title-h1" style="margin-top:0.8rem;">三个部分，<span style="color:var(--accent)">两条主线</span></h2>
+        </div>
+        <div class="roadmap__rail">
+          <div class="roadmap__step">
+            <div class="roadmap__step__pin">P1</div>
+            <span class="roadmap__step__label">Part 1 · 调试</span>
+            <h3 class="roadmap__step__title">把 demo 改得更像产品</h3>
+            <ul class="roadmap__step__list">
+              <li>6 条核心设计原则</li>
+              <li>4 个 skill 的定位与演示</li>
+              <li>从用 skill → 做自己的 skill 集合</li>
+              <li>Pencil &amp; Claude Design 演示</li>
+            </ul>
+          </div>
+          <div class="roadmap__step">
+            <div class="roadmap__step__pin">P2</div>
+            <span class="roadmap__step__label">Part 2 · 部署</span>
+            <h3 class="roadmap__step__title">让它真正上线、能扛住</h3>
+            <ul class="roadmap__step__list">
+              <li>简单看 Vercel 后台</li>
+              <li>重点看 Dokploy + 我的实际部署方式</li>
+              <li>什么时候该走向自己的服务器</li>
+            </ul>
+          </div>
+          <div class="roadmap__step">
+            <div class="roadmap__step__pin">Q&amp;A</div>
+            <span class="roadmap__step__label">Part 3 · 答疑</span>
+            <h3 class="roadmap__step__title">问什么都行</h3>
+            <ul class="roadmap__step__list">
+              <li>调试相关</li>
+              <li>部署相关</li>
+              <li>个人产品 / 出海 / 黑客松</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 06 · DIVIDER · Part 1 调试 ==================== -->
+    <section class="slide" data-section="debug" data-overview="06 · — PART 1 · 调试 —">
+      <div class="divider">
+        <div class="divider__big-num">01</div>
+        <div class="divider__top">
+          <span>Part 1 / 3</span>
+          <span>从 demo 到产品 · 调试</span>
+        </div>
+        <div class="divider__center">
+          <span class="divider__chapter">Part One</span>
+          <h2 class="divider__title">
+            <span class="accent">调试</span><br/>
+            把 demo 改得<br/>更像<span class="accent">产品</span>
+          </h2>
+          <p class="divider__sub">从交互设计师的角度，回答一个真实问题：为什么 AI 做的页面，总有一股 demo 味。</p>
+        </div>
+        <div class="divider__bottom">
+          <span>A梦 · 2026</span>
+          <span>← / → 翻页</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 07 · 调试核心问题 ==================== -->
+    <section class="slide" data-section="debug" data-overview="07 · 调试的核心问题">
+      <div class="question">
+        <span class="question__pre">// the real question</span>
+        <h2 class="question__big">
+          为什么很多 AI 做出来的页面，<br/>
+          不是不能用，<br/>
+          而是总有一股<em>demo 味、AI 味</em>？
+        </h2>
+        <p class="subtle" style="font-size:1.1rem;max-width:50ch;margin:0;">
+          从交互设计师的视角，怎么判断一个页面到底哪里不对、可以怎么往前改。
+        </p>
+      </div>
+    </section>
+
+    <!-- ==================== 08 · 6 原则一览 ==================== -->
+    <section class="slide" data-section="debug" data-overview="08 · 6 条核心设计原则">
+      <div class="principles-grid">
+        <div class="principles-grid__head">
+          <span class="eyebrow">Principles · 06</span>
+          <h2 class="title-h1" style="margin-top:0.8rem;">6 条<br/>核心<br/><span style="color:var(--accent);">设计原则</span></h2>
+          <p class="subtle" style="margin-top:1.2rem;font-size:1rem;max-width:18ch;">围绕 Landing Page、产品表达、用户触达。简单、实用、可立刻拿去用。</p>
+        </div>
+        <div class="principles-grid__list">
+          <div class="principle-pill"><span class="principle-pill__num">01</span><span class="principle-pill__txt">先让用户看懂，再让用户觉得高级</span></div>
+          <div class="principle-pill"><span class="principle-pill__num">02</span><span class="principle-pill__txt">首屏只做一件事：用一句话讲清产品价值</span></div>
+          <div class="principle-pill"><span class="principle-pill__num">03</span><span class="principle-pill__txt">页面不是信息堆砌，而是引导用户做决定</span></div>
+          <div class="principle-pill"><span class="principle-pill__num">04</span><span class="principle-pill__txt">用户不是没耐心，而是没有义务理解你</span></div>
+          <div class="principle-pill"><span class="principle-pill__num">05</span><span class="principle-pill__txt">视觉的作用是帮信息分层，不是制造热闹</span></div>
+          <div class="principle-pill"><span class="principle-pill__num">06</span><span class="principle-pill__txt">Landing 不是艺术作品，它是一个转化工具</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 09 · 原则 1 ==================== -->
+    <section class="slide" data-section="debug" data-overview="09 · 原则 1 · 看懂 > 高级">
+      <div class="principle">
+        <div class="principle__num">01</div>
+        <div class="principle__head">
+          <span class="principle__no">Principle · 01</span>
+          <h2 class="principle__title">先让用户看懂，<br/>再让用户觉得高级</h2>
+        </div>
+        <div class="principle__body">
+          <ul class="principle__list">
+            <li><span><strong>落地页的第一任务是信息传达，不是审美表达。</strong></span></li>
+            <li><span>用户首先想知道：<strong>你是做什么的、对我有什么用、我下一步该做什么。</strong></span></li>
+            <li><span>文案表达 <strong>优先于</strong> 视觉表达。</span></li>
+            <li><span>清楚比好看更重要。</span></li>
+          </ul>
+          <aside class="principle__nail">
+            <div class="principle__nail__label">钉子句 · Quotable</div>
+            <p class="principle__nail__quote">"很多 AI 做出来的页面，不是丑，<br/>而是没说清楚。"</p>
+            <p class="principle__nail__quote">"设计不是给产品化妆，<br/>是帮产品把话说明白。"</p>
+          </aside>
+        </div>
+        <div class="principle__foot">
+          <span>Principle 01 of 06</span>
+          <span>说人话 &gt; 看起来对</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 10 · 原则 2 ==================== -->
+    <section class="slide" data-section="debug" data-overview="10 · 原则 2 · 首屏一件事">
+      <div class="principle">
+        <div class="principle__num">02</div>
+        <div class="principle__head">
+          <span class="principle__no">Principle · 02</span>
+          <h2 class="principle__title">首屏只做一件事：<br/>用一句话讲清产品价值</h2>
+        </div>
+        <div class="principle__body">
+          <ul class="principle__list">
+            <li><span>首屏要快速回答三个问题：<strong>这是什么 / 适合谁 / 为什么值得试。</strong></span></li>
+            <li><span>常见问题：<strong>说了很多但没有重点</strong>、讲功能不讲结果、讲自己做了什么不讲用户得到什么。</span></li>
+            <li><span>一个清晰首屏的基础结构：<strong>主标题 + 副标题 + CTA + 辅助证明。</strong></span></li>
+          </ul>
+          <aside class="principle__nail">
+            <div class="principle__nail__label">基础结构 · Skeleton</div>
+            <p class="principle__nail__quote" style="font-family:var(--font-mono);font-size:0.95rem;line-height:1.8;">
+              <span style="color:var(--accent);">H1</span> &nbsp;一句话讲清你是什么<br/>
+              <span style="color:var(--accent);">P</span> &nbsp;&nbsp;给谁 / 解决什么 / 怎么不一样<br/>
+              <span style="color:var(--accent);">CTA</span> 现在能做的下一步<br/>
+              <span style="color:var(--accent);">Proof</span> 客户 logo / 数据 / 截图
+            </p>
+          </aside>
+        </div>
+        <div class="principle__foot">
+          <span>Principle 02 of 06</span>
+          <span>5 秒内回答 3 个问题</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 11 · 原则 3 ==================== -->
+    <section class="slide" data-section="debug" data-overview="11 · 原则 3 · 引导决定">
+      <div class="principle">
+        <div class="principle__num">03</div>
+        <div class="principle__head">
+          <span class="principle__no">Principle · 03</span>
+          <h2 class="principle__title">页面不是信息堆砌，<br/>而是引导用户做决定</h2>
+        </div>
+        <div class="principle__body">
+          <ul class="principle__list">
+            <li><span>落地页是<strong>说服顺序</strong>，不是把内容放满。</span></li>
+            <li><span>用户走过的心理路径：<strong>看懂 → 产生相关性 → 建立信任 → 愿意行动。</strong></span></li>
+            <li><span>页面结构不只是排版问题，<strong>更是信息顺序问题</strong>。</span></li>
+          </ul>
+          <aside class="principle__nail">
+            <div class="principle__nail__label">说服阶梯 · Funnel</div>
+            <p class="principle__nail__quote" style="font-family:var(--font-mono);font-size:0.92rem;line-height:1.9;">
+              <span style="color:var(--accent);">①</span> 看懂 — Hero 区<br/>
+              <span style="color:var(--accent);">②</span> 相关 — 痛点 / 场景<br/>
+              <span style="color:var(--accent);">③</span> 信任 — 案例 / 数据 / 背书<br/>
+              <span style="color:var(--accent);">④</span> 行动 — CTA / 价格 / 风险消除
+            </p>
+          </aside>
+        </div>
+        <div class="principle__foot">
+          <span>Principle 03 of 06</span>
+          <span>顺序就是设计</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 12 · 原则 4 ==================== -->
+    <section class="slide" data-section="debug" data-overview="12 · 原则 4 · 没义务理解">
+      <div class="principle">
+        <div class="principle__num">04</div>
+        <div class="principle__head">
+          <span class="principle__no">Principle · 04</span>
+          <h2 class="principle__title">用户不是没耐心，<br/>而是没有义务理解你</h2>
+        </div>
+        <div class="principle__body">
+          <ul class="principle__list">
+            <li><span>用户不会替你脑补，也不会主动帮你理解产品。</span></li>
+            <li><span>能提前表达清楚的，<strong>不要留给用户自己猜。</strong></span></li>
+            <li><span>可落地的细节：标题尽量明确 · CTA 尽量具体 · 少用黑话 · 一屏不要太多同等级重点 · 模块标题让人一眼知道在讲什么。</span></li>
+          </ul>
+          <aside class="principle__nail">
+            <div class="principle__nail__label">反例 → 正例</div>
+            <p class="principle__nail__quote" style="font-size:0.95rem;">
+              <span class="mute" style="text-decoration:line-through;">了解更多</span>
+              <span style="color:var(--accent);">→</span>
+              <span style="color:var(--ink);">查看完整定价</span>
+            </p>
+            <p class="principle__nail__quote" style="font-size:0.95rem;">
+              <span class="mute" style="text-decoration:line-through;">极致体验</span>
+              <span style="color:var(--accent);">→</span>
+              <span style="color:var(--ink);">一次构建，30 秒部署到 12 个区域</span>
+            </p>
+          </aside>
+        </div>
+        <div class="principle__foot">
+          <span>Principle 04 of 06</span>
+          <span>不要让用户去翻译你</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 13 · 原则 5 ==================== -->
+    <section class="slide" data-section="debug" data-overview="13 · 原则 5 · 视觉是分层">
+      <div class="principle">
+        <div class="principle__num">05</div>
+        <div class="principle__head">
+          <span class="principle__no">Principle · 05</span>
+          <h2 class="principle__title">视觉的作用是<span style="color:var(--accent);">帮信息分层</span>，<br/>而不是制造热闹</h2>
+        </div>
+        <div class="principle__body">
+          <ul class="principle__list">
+            <li><span>很多 AI 页面问题不是内容少，是<strong>视觉很热闹但重点不清楚</strong>。</span></li>
+            <li><span>好的视觉不是元素更多，<strong>是重点更明确</strong>。</span></li>
+            <li><span>视觉至少要服务于：告诉用户先看哪里 / 区分主次 / 把相关内容组织在一起 / 让阅读更轻松。</span></li>
+            <li><span>一个区域里，<strong>最好只有一个视觉主角</strong>。</span></li>
+          </ul>
+          <aside class="principle__nail">
+            <div class="principle__nail__label">检查清单 · Checklist</div>
+            <p class="principle__nail__quote" style="font-family:var(--font-mono);font-size:0.85rem;line-height:1.85;">
+              □ 用户的眼睛 2 秒内能落到主行动？<br/>
+              □ 一屏里是不是有 ≥3 个同样高亮的元素？<br/>
+              □ 移除所有装饰，骨架还成立吗？<br/>
+              □ 颜色是在分层 还是在抢戏？
+            </p>
+          </aside>
+        </div>
+        <div class="principle__foot">
+          <span>Principle 05 of 06</span>
+          <span>一个区域，一个主角</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 14 · 原则 6 ==================== -->
+    <section class="slide" data-section="debug" data-overview="14 · 原则 6 · 转化工具">
+      <div class="principle">
+        <div class="principle__num">06</div>
+        <div class="principle__head">
+          <span class="principle__no">Principle · 06</span>
+          <h2 class="principle__title">Landing 不是艺术作品，<br/>它<span style="color:var(--accent);">首先是一个转化工具</span></h2>
+        </div>
+        <div class="principle__body">
+          <ul class="principle__list">
+            <li><span>最终标准不是<strong>自己觉得好看</strong>，而是用户是否更容易理解、信任、行动。</span></li>
+            <li><span>设计不是装饰层，<strong>是业务层的一部分</strong>。</span></li>
+            <li><span>如果一个页面很好看，但没人点、没人注册、没人留下来——<strong>那它还没有真正设计好</strong>。</span></li>
+          </ul>
+          <aside class="principle__nail">
+            <div class="principle__nail__label">最后一问 · Final Question</div>
+            <p class="principle__nail__quote">
+              "上线两周后回头看，<br/>
+              这个页面有没有真的<br/>
+              <span style="color:var(--accent);">把人接住</span>？"
+            </p>
+          </aside>
+        </div>
+        <div class="principle__foot">
+          <span>Principle 06 of 06</span>
+          <span>看不见的东西，最后会决定一切</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 15 · 过渡 · 从原则到工具 ==================== -->
+    <section class="slide" data-section="debug" data-overview="15 · 从原则到工具">
+      <div class="question">
+        <span class="question__pre">// principles → tools</span>
+        <h2 class="question__big">
+          原则是<em>尺子</em>，<br/>
+          工具是<em>动作</em>。
+        </h2>
+        <p class="subtle" style="font-size:1.1rem;max-width:55ch;line-height:1.6;margin:0;">
+          下面这些工具，都可以放回这 6 条原则里检验：
+          <strong style="color:var(--ink);">它们到底有没有帮我们把页面说清楚、层级理顺、重点拉出来、用户更愿意继续点下去。</strong>
+        </p>
+      </div>
+    </section>
+
+    <!-- ==================== 16 · 工具顺序 ==================== -->
+    <section class="slide" data-section="debug" data-overview="16 · 工具演示顺序">
+      <div class="tools-order">
+        <div>
+          <span class="eyebrow">Tool Demo Order</span>
+          <h2 class="title-h1" style="margin-top:0.8rem;">三个工具，<br/>按这个顺序看最容易看懂区别</h2>
+        </div>
+        <div class="tools-order__rail">
+          <div class="tool-card">
+            <span class="tool-card__num">01</span>
+            <span class="tool-card__role">Skill · 接入工作流</span>
+            <h3 class="tool-card__name">Skills</h3>
+            <p class="tool-card__desc">能直接接入 Claude Code 工作流的一段。它是规则、流程、审查系统的化身。</p>
+            <span class="tool-card__weight">规则 / 流程 / 审查</span>
+          </div>
+          <span class="tools-order__arrow">→</span>
+          <div class="tool-card">
+            <span class="tool-card__num">02</span>
+            <span class="tool-card__role">Pencil · 方向探索</span>
+            <h3 class="tool-card__name">Pencil <span style="font-size:0.6em;color:var(--ink-mute);">(pencil.dev)</span></h3>
+            <p class="tool-card__desc">页面方向探索和设计辅助，帮你跳出当前 demo 的惯性表达。</p>
+            <span class="tool-card__weight">方向 / 探索</span>
+          </div>
+          <span class="tools-order__arrow">→</span>
+          <div class="tool-card">
+            <span class="tool-card__num">03</span>
+            <span class="tool-card__role">Claude Design · 视觉表达</span>
+            <h3 class="tool-card__name">Claude Design</h3>
+            <p class="tool-card__desc">视觉生成与表达上限，更适合直观对比不同设计方向带来的差异。</p>
+            <span class="tool-card__weight">生成 / 上限</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 17 · DIVIDER · Skills ==================== -->
+    <section class="slide" data-section="skills" data-overview="17 · — SKILLS —">
+      <div class="divider">
+        <div class="divider__big-num">SK</div>
+        <div class="divider__top">
+          <span>Part 1.5 · Skills 章节</span>
+          <span>4 个 skill · 一个工作流</span>
+        </div>
+        <div class="divider__center">
+          <span class="divider__chapter">Chapter · Skills</span>
+          <h2 class="divider__title"><span class="accent">Skills</span><br/>规则、流程、<br/>审查系统</h2>
+          <p class="divider__sub">不是装个 skill 就够了。要让它们组合成一条你能复用的工作流。</p>
+        </div>
+        <div class="divider__bottom">
+          <span>frontend-design · impeccable · taste-skill · web-design-guidelines</span>
+          <span>↓ 一句话定位 · 主讲 · 对照 · 一带</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 18 · 4 skill 矩阵 ==================== -->
+    <section class="slide" data-section="skills" data-overview="18 · 4 个 skill · 一句话定位">
+      <div class="skill-matrix">
+        <div>
+          <span class="eyebrow">4 Skills · 1-Liner Positioning</span>
+          <h2 class="title-h2" style="margin-top:0.6rem;">把这 4 个 skill <span class="accent">放在同一张图里</span>看</h2>
+        </div>
+        <div class="skill-matrix__grid">
+          <article class="skill-card" data-skill="frontend-design">
+            <header class="skill-card__head">
+              <h3 class="skill-card__name">/frontend-design</h3>
+              <span class="skill-card__author">by Anthropic</span>
+            </header>
+            <h4 class="skill-card__role">思想<br/>（为什么）</h4>
+            <p class="skill-card__desc">一个 SKILL.md，约 50 行。讲"别写出 AI 味、要选一个 bold 的美学方向"。理念篇。</p>
+            <div class="skill-card__meta">
+              <span><span class="key">粒度</span> <span class="v">1 个总纲</span></span>
+              <span><span class="key">门槛</span> <span class="v">极低</span></span>
+            </div>
+            <a class="skill-card__link" href="https://github.com/anthropics/skills/tree/main/skills/frontend-design" target="_blank" rel="noopener">
+              github.com/anthropics/skills ↗
+            </a>
+          </article>
+          <article class="skill-card" data-skill="impeccable">
+            <header class="skill-card__head">
+              <h3 class="skill-card__name">/impeccable</h3>
+              <span class="skill-card__author">by Paul Bakaus</span>
+            </header>
+            <h4 class="skill-card__role">工作流<br/>（怎么做）</h4>
+            <p class="skill-card__desc">1 个扩展 skill + 18 个命令 + 反模式 CLI。从 shape→craft→audit→polish→bolder→quieter→delight 一整条流水线。</p>
+            <div class="skill-card__meta">
+              <span><span class="key">粒度</span> <span class="v">流水线</span></span>
+              <span><span class="key">门槛</span> <span class="v">中</span></span>
+            </div>
+            <a class="skill-card__link" href="https://impeccable.style" target="_blank" rel="noopener">
+              impeccable.style ↗
+            </a>
+          </article>
+          <article class="skill-card" data-skill="taste-skill">
+            <header class="skill-card__head">
+              <h3 class="skill-card__name">/taste-skill</h3>
+              <span class="skill-card__author">by Leonxlnx</span>
+            </header>
+            <h4 class="skill-card__role">风格选择器<br/>（做成什么样）</h4>
+            <p class="skill-card__desc">9 个风格变体 + 3 个可调 dial（variance / motion / density）。按视觉方向选一个 SKILL.md 挂上去。</p>
+            <div class="skill-card__meta">
+              <span><span class="key">粒度</span> <span class="v">9 风格</span></span>
+              <span><span class="key">门槛</span> <span class="v">中</span></span>
+            </div>
+            <a class="skill-card__link" href="https://tasteskill.dev" target="_blank" rel="noopener">
+              tasteskill.dev ↗
+            </a>
+          </article>
+          <article class="skill-card" data-skill="web-design-guidelines">
+            <header class="skill-card__head">
+              <h3 class="skill-card__name">/web-design-guidelines</h3>
+              <span class="skill-card__author">by Vercel</span>
+            </header>
+            <h4 class="skill-card__role">事后体检<br/>（做完查一下）</h4>
+            <p class="skill-card__desc">20 行小 skill，每次 WebFetch Vercel 的 guidelines 去 audit UI。</p>
+            <div class="skill-card__meta">
+              <span><span class="key">粒度</span> <span class="v">单一 audit</span></span>
+              <span><span class="key">门槛</span> <span class="v">低</span></span>
+            </div>
+            <a class="skill-card__link" href="https://github.com/vercel-labs/agent-skills" target="_blank" rel="noopener">
+              github.com/vercel-labs/agent-skills ↗
+            </a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 19 · frontend-design 详讲 ==================== -->
+    <section class="slide" data-section="skills" data-overview="19 · frontend-design · 思想">
+      <div class="skill-detail">
+        <div class="skill-detail__head">
+          <span class="skill-detail__id">Skill 01 · Anthropic 官方</span>
+          <h2 class="skill-detail__title">/frontend-design</h2>
+          <a class="skill-detail__link" href="https://github.com/anthropics/skills/tree/main/skills/frontend-design" target="_blank" rel="noopener">github.com/anthropics/skills ↗</a>
+          <p class="skill-detail__role">"先选一个 bold 的美学方向，再开始写代码。"<br/>这是一份给 AI 的<strong>设计自我意识</strong>。</p>
+          <ul class="skill-detail__points">
+            <li><strong>核心命令</strong>：直接挂载，作为系统级提示。任何写前端的请求，都先经过它。</li>
+            <li><strong>能达到的效果</strong>：让 AI 在动手前先选定方向（editorial / brutalism / bento / luxury / scrollytelling 等），而不是无脑出 Inter + 紫渐变 + card grid。</li>
+            <li><strong>关键 BAN list</strong>：Inter / Roboto / Arial、紫色渐变、purple-on-white、card-on-card、generic SaaS。</li>
+            <li><strong>地位</strong>：它是"为什么"。后面的 impeccable / taste-skill 都建立在这个共识之上。</li>
+          </ul>
+        </div>
+        <div class="skill-detail__right">
+          <div class="terminal">
+            <span class="comment"># 安装方式（最简）</span><br/>
+            <span class="prompt">$</span> <span class="cmd-text">cd ~/.claude/skills</span><br/>
+            <span class="prompt">$</span> <span class="cmd-text">git clone &lt;repo&gt; frontend-design</span><br/>
+            <br/>
+            <span class="comment"># 触发：写任意前端时自动加载</span><br/>
+            <span class="prompt">›</span> <span class="cmd-text">"做一个 hero section"</span><br/>
+            → skill loaded <span class="ok">✓</span><br/>
+            → 选定方向：editorial / dark<br/>
+            → 选定字体：PP Editorial New + Inter<br/>
+            → 拒绝：Inter as display, purple gradient
+          </div>
+          <div class="card">
+            <div class="card__num">用一句话总结</div>
+            <p class="card__title" style="font-family:var(--font-serif);">
+              "教 AI <span style="color:var(--accent);">先有审美，后写代码</span>。"
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 20 · frontend-design 内容拆解（中文化）==================== -->
+    <section class="slide" data-section="skills" data-overview="20 · frontend-design · 内容拆解">
+      <div class="fd-explain">
+        <header class="fd-explain__head">
+          <span class="eyebrow">/frontend-design · 核心内容拆解</span>
+          <h2 class="title-h2" style="margin-top:0.5rem;">
+            它<span style="color:var(--accent);">到底讲了什么</span>？
+          </h2>
+          <p class="subtle" style="margin-top:0.8rem;font-size:1rem;max-width:64ch;line-height:1.55;">
+            主张只有一句：<strong style="color:var(--ink);">写代码之前，先做出一个明确的美学决定。</strong>
+            展开之后，分三步 + 一条禁令。
+          </p>
+        </header>
+
+        <div class="fd-explain__grid">
+          <article class="fd-card">
+            <header class="fd-card__head">
+              <span class="fd-card__num">第一步 · 先想清楚</span>
+              <h3 class="fd-card__title">想清楚<br/>这四件事</h3>
+            </header>
+            <ul class="fd-card__list">
+              <li><strong>给谁</strong> · 用户、情境、当下心智</li>
+              <li><strong>要什么感觉</strong> · 界面要"长成什么样"</li>
+              <li><strong>有什么约束</strong> · 框架 / 性能 / 可访问性</li>
+              <li><strong>差异点</strong> · 让人记住的那件事</li>
+            </ul>
+            <p class="fd-card__foot">这四件事没答清楚，不要动键盘。</p>
+          </article>
+
+          <article class="fd-card">
+            <header class="fd-card__head">
+              <span class="fd-card__num">第二步 · 选一个方向</span>
+              <h3 class="fd-card__title">挑一个方向<br/>别骑墙</h3>
+            </header>
+            <div class="fd-tags">
+              <span class="fd-tag">极简克制</span>
+              <span class="fd-tag">极繁混沌</span>
+              <span class="fd-tag">复古未来</span>
+              <span class="fd-tag">有机自然</span>
+              <span class="fd-tag">奢华精致</span>
+              <span class="fd-tag">玩具感</span>
+              <span class="fd-tag">杂志编辑</span>
+              <span class="fd-tag">粗野主义</span>
+              <span class="fd-tag">装饰艺术</span>
+              <span class="fd-tag">柔和粉彩</span>
+              <span class="fd-tag">工业功能</span>
+            </div>
+            <p class="fd-card__foot">11 种方向任选其一，做到极致。<br/>不做"安全的中间态"。</p>
+          </article>
+
+          <article class="fd-card">
+            <header class="fd-card__head">
+              <span class="fd-card__num">第三步 · 逐条打磨</span>
+              <h3 class="fd-card__title">5 个维度<br/>每条都要到位</h3>
+            </header>
+            <ul class="fd-card__list">
+              <li><strong>字体</strong> · 用有个性的字，标题配正文要选一对</li>
+              <li><strong>颜色</strong> · 一个主色 + 锐利点缀 &gt; 均匀调色板</li>
+              <li><strong>动效</strong> · 一个高光时刻 &gt; 满场碎片细节</li>
+              <li><strong>空间</strong> · 不对称 / 重叠 / 破格 / 大留白</li>
+              <li><strong>细节</strong> · 噪点 / 渐变 / 几何 / 戏剧阴影</li>
+            </ul>
+            <p class="fd-card__foot">维度不全，就不算"打磨完"。</p>
+          </article>
+        </div>
+
+        <footer class="fd-banned">
+          <span class="fd-banned__label">绝不要做</span>
+          <div class="fd-banned__items">
+            <span><s>Inter / Roboto / Arial / 系统默认字</s></span>
+            <span><s>紫色渐变配白底</s></span>
+            <span><s>千篇一律的卡片网格</s></span>
+            <span><s>没有方向的"通用设计"</s></span>
+          </div>
+        </footer>
+      </div>
+    </section>
+
+    <!-- ==================== 21 · impeccable 概述 ==================== -->
+    <section class="slide" data-section="skills" data-overview="21 · impeccable · 概述">
+      <div class="skill-detail">
+        <div class="skill-detail__head">
+          <span class="skill-detail__id">Skill 02 · Paul Bakaus · 主讲</span>
+          <h2 class="skill-detail__title">/impeccable</h2>
+          <a class="skill-detail__link" href="https://impeccable.style" target="_blank" rel="noopener">impeccable.style · github.com/pbakaus/impeccable ↗</a>
+          <p class="skill-detail__role">把 frontend-design 的"思想"，<br/>变成一条<strong>可以一步步走的流水线</strong>。</p>
+          <ul class="skill-detail__points">
+            <li><strong>本质</strong>：1 个扩展 skill + 18 个命令 + 反模式 CLI（<code class="cmd">npx impeccable detect</code>）。</li>
+            <li><strong>foundation</strong>：<code class="cmd">/impeccable</code> 自身是底座，所有其他命令都共享它的设计原则与反模式库。</li>
+            <li><strong>三个起手</strong>：<code class="cmd">/impeccable teach</code>（项目首次配置）· <code class="cmd">/impeccable craft</code>（端到端实现）· <code class="cmd">/impeccable extract</code>（沉淀设计系统）。</li>
+            <li><strong>最大价值</strong>：18 个命令每个都对应一种"AI 味"的具体修法，拿到哪条用哪条。</li>
+          </ul>
+        </div>
+        <div class="skill-detail__right">
+          <div class="terminal">
+            <span class="comment"># 一次完整工作流（理想路径）</span><br/>
+            <span class="prompt">›</span> <span class="cmd-text">/impeccable teach</span> <span class="comment">// 项目配置一次</span><br/>
+            <span class="prompt">›</span> <span class="cmd-text">/shape</span> &nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">// 想清楚再开始</span><br/>
+            <span class="prompt">›</span> <span class="cmd-text">/impeccable craft</span> <span class="comment">// 端到端实现</span><br/>
+            <span class="prompt">›</span> <span class="cmd-text">/critique</span> &nbsp;<span class="comment">// 自我评分</span><br/>
+            <span class="prompt">›</span> <span class="cmd-text">/audit</span> &nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">// 技术体检 P0-P3</span><br/>
+            <span class="prompt">›</span> <span class="cmd-text">/polish</span> &nbsp;&nbsp;&nbsp;<span class="comment">// 上线前最后一遍</span><br/>
+            <br/>
+            <span class="comment"># 出现问题时</span><br/>
+            <span class="prompt">›</span> <span class="cmd-text">/bolder | /quieter</span> &nbsp;<span class="comment">// 调强弱</span><br/>
+            <span class="prompt">›</span> <span class="cmd-text">/distill</span> &nbsp;<span class="comment">// 删到只剩骨头</span><br/>
+            <span class="prompt">›</span> <span class="cmd-text">/delight</span> &nbsp;<span class="comment">// 最后加一点人味</span>
+          </div>
+          <div class="card">
+            <div class="card__num">用一句话总结</div>
+            <p class="card__title" style="font-family:var(--font-serif);">
+              "把"做一个好页面"<br/>拆成 <span style="color:var(--accent);">18 个可复用的动作</span>。"
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 22 · impeccable 最小命令集（零基础）==================== -->
+    <section class="slide" data-section="skills" data-overview="22 · impeccable · 零基础最小命令集">
+      <div class="fd-explain">
+        <header class="fd-explain__head">
+          <span class="eyebrow">零基础先掌握这 4 个</span>
+          <h2 class="title-h2" style="margin-top:0.5rem;">
+            18 个命令学不完？<br/>
+            <span style="color:var(--accent);">先会这 4 个就够用</span>
+          </h2>
+          <p class="subtle" style="margin-top:0.7rem;font-size:1rem;max-width:60ch;line-height:1.55;">
+            刚开始用 AI 写前端，不需要 18 个全记。<strong style="color:var(--ink);">下面这 4 个打通 80% 的日常场景。</strong>
+          </p>
+        </header>
+
+        <div class="min-cmd-grid">
+          <article class="min-cmd">
+            <header class="min-cmd__head">
+              <span class="min-cmd__num">01</span>
+              <code class="min-cmd__name">/impeccable teach</code>
+              <span class="min-cmd__badge">项目初始化</span>
+            </header>
+            <dl class="min-cmd__dl">
+              <dt>什么时候用</dt>
+              <dd>新项目刚开始。<strong>整个项目只需要做一次。</strong></dd>
+              <dt>怎么用</dt>
+              <dd>直接输入 <code>/impeccable teach</code>。它会问你几个问题：做给谁、什么品牌调性、偏好方向。</dd>
+              <dt>会得到</dt>
+              <dd>一份 <code>.impeccable.md</code> 写在项目根目录。之后所有命令都会自动读它，AI 不会再乱飞。</dd>
+            </dl>
+          </article>
+
+          <article class="min-cmd">
+            <header class="min-cmd__head">
+              <span class="min-cmd__num">02</span>
+              <code class="min-cmd__name">/impeccable craft</code>
+              <span class="min-cmd__badge">主力造页面</span>
+            </header>
+            <dl class="min-cmd__dl">
+              <dt>什么时候用</dt>
+              <dd>要做一个新页面、新组件、新模块。</dd>
+              <dt>怎么用</dt>
+              <dd>直接讲需求，例：<code>/impeccable craft 一个 SaaS 定价页</code> 或 <code>/impeccable craft 首页的 Hero 区</code>。</dd>
+              <dt>会得到</dt>
+              <dd>它会<strong>先想再写</strong>：问清用户→选方向→出代码→打开浏览器看→不满意自己改，直到看起来像产品。</dd>
+            </dl>
+          </article>
+
+          <article class="min-cmd">
+            <header class="min-cmd__head">
+              <span class="min-cmd__num">03</span>
+              <code class="min-cmd__name">/critique</code>
+              <span class="min-cmd__badge">挑毛病</span>
+            </header>
+            <dl class="min-cmd__dl">
+              <dt>什么时候用</dt>
+              <dd>页面做完了，但心里觉得"差点意思"、"有 AI 味"但说不上哪里。</dd>
+              <dt>怎么用</dt>
+              <dd><code>/critique 当前首页</code>。它会分两路评审：一路按 Nielsen 十大原则，一路跑反模式扫描。</dd>
+              <dt>会得到</dt>
+              <dd>一份清单：<strong>哪里像 AI、为什么像、该用下面哪个命令改。</strong></dd>
+            </dl>
+          </article>
+
+          <article class="min-cmd">
+            <header class="min-cmd__head">
+              <span class="min-cmd__num">04</span>
+              <code class="min-cmd__name">/polish</code>
+              <span class="min-cmd__badge">最后一遍</span>
+            </header>
+            <dl class="min-cmd__dl">
+              <dt>什么时候用</dt>
+              <dd>功能都对了、页面也不丑了，<strong>上线前那最后一遍</strong>。</dd>
+              <dt>怎么用</dt>
+              <dd><code>/polish 定价页</code> 或 <code>/polish 整个站点</code>。</dd>
+              <dt>会得到</dt>
+              <dd>对齐、状态（hover / focus / error）、文案一致、动效平滑、主题色规范 —— 6 个维度逐条收尾。</dd>
+            </dl>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 23 · impeccable 实战流程 ==================== -->
+    <section class="slide" data-section="skills" data-overview="23 · impeccable · 一次完整实战">
+      <div class="recipe">
+        <header class="recipe__head">
+          <span class="eyebrow">实战 · 从零做一个 Landing Page</span>
+          <h2 class="title-h2" style="margin-top:0.5rem;">
+            最简工作流 · <span style="color:var(--accent);">5 步跑完</span>
+          </h2>
+          <p class="subtle" style="margin-top:0.7rem;font-size:1rem;max-width:58ch;line-height:1.55;">
+            这套流程我自己用得最多。<strong style="color:var(--ink);">记住这 5 步，足以把"差不多能看"推到"真的像产品"。</strong>
+          </p>
+        </header>
+
+        <ol class="recipe__steps">
+          <li class="recipe-step">
+            <div class="recipe-step__pin">1</div>
+            <div class="recipe-step__body">
+              <div class="recipe-step__cmd"><code>/impeccable teach</code> <span class="recipe-step__mark">仅一次</span></div>
+              <p class="recipe-step__desc">装完 skill 后先做这步。项目配置一次写好，之后所有命令都吃这份配置。</p>
+            </div>
+          </li>
+          <li class="recipe-step">
+            <div class="recipe-step__pin">2</div>
+            <div class="recipe-step__body">
+              <div class="recipe-step__cmd"><code>/impeccable craft 想做的东西</code></div>
+              <p class="recipe-step__desc">把需求讲给它听。从这里开始它会自己想清楚、写代码、看效果。你只需要看着浏览器里的结果。</p>
+            </div>
+          </li>
+          <li class="recipe-step">
+            <div class="recipe-step__pin">3</div>
+            <div class="recipe-step__body">
+              <div class="recipe-step__cmd"><code>/critique 当前页面</code></div>
+              <p class="recipe-step__desc">页面出来了 → 让它先挑毛病。别自己硬改，让它告诉你"哪里还像 AI slop"。</p>
+            </div>
+          </li>
+          <li class="recipe-step recipe-step--branch">
+            <div class="recipe-step__pin">4</div>
+            <div class="recipe-step__body">
+              <div class="recipe-step__cmd">按评审结果<strong style="color:var(--ink);">对症下药</strong></div>
+              <ul class="recipe-branch">
+                <li><span class="recipe-branch__sym">太平</span><span>没存在感、看不到亮点</span><code>/bolder 某区域</code></li>
+                <li><span class="recipe-branch__sym">太吵</span><span>视觉疲劳、全是重点</span><code>/quieter 某区域</code></li>
+                <li><span class="recipe-branch__sym">太乱</span><span>信息堆砌、没主角</span><code>/distill 某区域</code></li>
+              </ul>
+            </div>
+          </li>
+          <li class="recipe-step">
+            <div class="recipe-step__pin">5</div>
+            <div class="recipe-step__body">
+              <div class="recipe-step__cmd"><code>/polish 整页</code> <span class="recipe-step__mark">上线前</span></div>
+              <p class="recipe-step__desc">功能对了、风格定了，最后一遍把对齐、状态、文案、动效收干净。</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ==================== 24 · impeccable 18 命令地图 ==================== -->
+    <section class="slide" data-section="skills" data-overview="24 · impeccable · 18 命令地图">
+      <div class="cmd-wall">
+        <div>
+          <span class="eyebrow">18 Commands · 一张地图记住所有</span>
+          <h2 class="title-h2" style="margin-top:0.5rem;">从想清楚到上线打磨，<br/>每一步都有对应命令</h2>
+        </div>
+        <div class="cmd-wall__grid">
+          <!-- foundation -->
+          <div class="cmd-tile is-foundation"><div class="cmd-tile__name">/impeccable</div><div class="cmd-tile__tag">底座 · 设计大脑</div></div>
+
+          <!-- thinking -->
+          <div class="cmd-tile"><div class="cmd-tile__name">/shape</div><div class="cmd-tile__tag">写代码前先想清楚</div></div>
+          <div class="cmd-tile"><div class="cmd-tile__name">/impeccable craft</div><div class="cmd-tile__tag">shape + 实现 + 视觉迭代</div></div>
+          <div class="cmd-tile"><div class="cmd-tile__name">/impeccable teach</div><div class="cmd-tile__tag">项目级风格初始化</div></div>
+          <div class="cmd-tile"><div class="cmd-tile__name">/impeccable extract</div><div class="cmd-tile__tag">把代码里重复模式沉成 token</div></div>
+
+          <!-- craft / layout -->
+          <div class="cmd-tile"><div class="cmd-tile__name">/layout</div><div class="cmd-tile__tag">空间、节奏、留白</div></div>
+          <div class="cmd-tile"><div class="cmd-tile__name">/arrange</div><div class="cmd-tile__tag">布局重排</div></div>
+          <div class="cmd-tile"><div class="cmd-tile__name">/typeset</div><div class="cmd-tile__tag">字体层级与可读性</div></div>
+          <div class="cmd-tile"><div class="cmd-tile__name">/colorize</div><div class="cmd-tile__tag">给灰白界面加策略色</div></div>
+          <div class="cmd-tile"><div class="cmd-tile__name">/clarify</div><div class="cmd-tile__tag">改 UX 文案让界面自解释</div></div>
+
+          <!-- balance -->
+          <div class="cmd-tile"><div class="cmd-tile__name">/bolder</div><div class="cmd-tile__tag">把"安全"推到"有存在感"</div></div>
+          <div class="cmd-tile"><div class="cmd-tile__name">/quieter</div><div class="cmd-tile__tag">把"喧闹"拉回"克制"</div></div>
+          <div class="cmd-tile"><div class="cmd-tile__name">/distill</div><div class="cmd-tile__tag">删到只剩骨头</div></div>
+          <div class="cmd-tile"><div class="cmd-tile__name">/animate</div><div class="cmd-tile__tag">有目的的动效</div></div>
+          <div class="cmd-tile"><div class="cmd-tile__name">/delight</div><div class="cmd-tile__tag">最后那一点小心思</div></div>
+
+          <!-- quality -->
+          <div class="cmd-tile"><div class="cmd-tile__name">/critique</div><div class="cmd-tile__tag">设计评审 + 反模式扫描</div></div>
+          <div class="cmd-tile"><div class="cmd-tile__name">/audit</div><div class="cmd-tile__tag">技术体检 P0-P3</div></div>
+          <div class="cmd-tile"><div class="cmd-tile__name">/polish</div><div class="cmd-tile__tag">上线前最后一遍</div></div>
+
+          <!-- production -->
+          <div class="cmd-tile"><div class="cmd-tile__name">/normalize</div><div class="cmd-tile__tag">拉回设计系统</div></div>
+          <div class="cmd-tile"><div class="cmd-tile__name">/harden</div><div class="cmd-tile__tag">真实数据 / 边界情况</div></div>
+          <div class="cmd-tile"><div class="cmd-tile__name">/optimize</div><div class="cmd-tile__tag">性能 LCP / INP / 包大小</div></div>
+          <div class="cmd-tile"><div class="cmd-tile__name">/adapt</div><div class="cmd-tile__tag">移动 / 邮件 / 嵌入适配</div></div>
+          <div class="cmd-tile"><div class="cmd-tile__name">/onboard</div><div class="cmd-tile__tag">空状态 / 首次启动</div></div>
+          <div class="cmd-tile"><div class="cmd-tile__name">/overdrive</div><div class="cmd-tile__tag">上限拉满 · 谨慎使用 ⚡</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 22 · impeccable 三件套：critique / audit / polish ==================== -->
+    <section class="slide" data-section="skills" data-overview="25 · impeccable · 质量三件套">
+      <div class="skill-detail">
+        <div class="skill-detail__head">
+          <span class="skill-detail__id">深讲 · 上线前的"质量三件套"</span>
+          <h2 class="skill-detail__title">/critique<br/>/audit<br/>/polish</h2>
+          <p class="skill-detail__role">三个动词的分工很清楚：<br/><strong>评审 → 体检 → 抛光</strong>。先后顺序不能错。</p>
+          <ul class="skill-detail__points">
+            <li><strong><code class="cmd">/critique</code> · 是不是有 AI 味</strong>：跑两路并行评审 — LLM 走 Nielsen 10 启发式，detector 跑 25 条反模式扫描。出"哪里像 AI slop"。</li>
+            <li><strong><code class="cmd">/audit</code> · 技术上撑不撑得住</strong>：5 个维度（A11Y / 性能 / 主题 / 响应式 / 反模式）打 0-4 分，每条结论给 P0-P3 严重度。出一份可塞进 Linear 的清单。</li>
+            <li><strong><code class="cmd">/polish</code> · 最后一遍抛光</strong>：6 个维度（对齐 / 字体 / 颜色 / 状态 / 动效 / 文案）。前提是功能已经完整 — 不然抛光就是浪费工时。</li>
+          </ul>
+        </div>
+        <div class="skill-detail__right">
+          <div class="terminal">
+            <span class="comment"># 顺序很关键</span><br/>
+            <span class="prompt">›</span> <span class="cmd-text">/critique the homepage hero</span><br/>
+            → Nielsen 评审 + AI slop detector<br/>
+            → 输出"3-5 件该改的事"<br/>
+            <br/>
+            <span class="prompt">›</span> <span class="cmd-text">/audit the checkout flow</span><br/>
+            → A11Y: <span class="warn">2/4</span> | Perf: <span class="ok">3/4</span><br/>
+            → P0: 焦点环缺失 (3 处)<br/>
+            → P1: LCP 4.2s, 该 lazy 的没 lazy<br/>
+            <br/>
+            <span class="prompt">›</span> <span class="cmd-text">/polish the pricing page</span><br/>
+            → 替换 12 处 hard-coded color → token<br/>
+            → 补齐 5 个 hover/focus 状态<br/>
+            → 收掉 2 处文案 placeholder
+          </div>
+          <div class="card">
+            <p class="card__title" style="font-family:var(--font-serif);font-weight:600;line-height:1.35;">
+              "<span style="color:var(--accent);">critique</span> 看像不像，<br/>
+              <span style="color:var(--accent);">audit</span> 看撑不撑，<br/>
+              <span style="color:var(--accent);">polish</span> 收最后一寸。"
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 23 · bolder vs quieter 对照 ==================== -->
+    <section class="slide" data-section="skills" data-overview="26 · bolder vs quieter 对照 demo">
+      <div class="compare">
+        <div>
+          <span class="eyebrow">现场对照 · Live Compare</span>
+          <h2 class="title-h2" style="margin-top:0.5rem;">同一个 Hero，<br/><span class="accent">/bolder</span> 和 <span style="color:oklch(72% 0.05 250);">/quieter</span> 是两个相反方向的旋钮</h2>
+        </div>
+        <div class="compare__pair">
+          <div class="compare__col" data-mode="quieter">
+            <header class="compare__head">
+              <span class="compare__cmd">/quieter</span>
+              <span class="compare__sub">DESATURATE · CALM</span>
+            </header>
+            <div class="mock-ui mock-ui--quiet">
+              <h3>Deploy your demo to production.</h3>
+              <p>Simple, fast, predictable. No surprises on launch day.</p>
+              <button>Get started</button>
+            </div>
+            <ul style="list-style:none;padding:0;margin:0;display:grid;gap:6px;font-family:var(--font-mono);font-size:0.78rem;color:var(--ink-mute);">
+              <li>· 降饱和 · 拉近对比</li>
+              <li>· 删多余阴影 / 边框</li>
+              <li>· 慢化动效，去自动播放</li>
+              <li>· 用于：refinement、企业感、操作工具</li>
+            </ul>
+          </div>
+          <div class="compare__center">
+            <span>同一份内容</span>
+            <span>不同 dial</span>
+          </div>
+          <div class="compare__col" data-mode="bolder">
+            <header class="compare__head">
+              <span class="compare__cmd">/bolder</span>
+              <span class="compare__sub">AMPLIFY · COMMIT</span>
+            </header>
+            <div class="mock-ui mock-ui--bold">
+              <h3>Ship your <em>demo</em>.<br/>Today.</h3>
+              <p>From localhost to production in 30 seconds. We refuse to be boring.</p>
+              <button>Launch →</button>
+            </div>
+            <ul style="list-style:none;padding:0;margin:0;display:grid;gap:6px;font-family:var(--font-mono);font-size:0.78rem;color:var(--ink-mute);">
+              <li>· 字号拉到 clamp(3rem, 7vw, 6.5rem)</li>
+              <li>· 字重对比 light 300 vs heavy 800</li>
+              <li>· 主色满强度，背景敢用 ink/accent</li>
+              <li>· 用于：marketing、hero、内容首屏</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 24 · impeccable 其他常用命令 ==================== -->
+    <section class="slide" data-section="skills" data-overview="27 · impeccable · 其他常用命令">
+      <div class="skill-detail" style="grid-template-columns: 1fr 1fr;">
+        <div class="skill-detail__head">
+          <span class="skill-detail__id">深讲 · 风味四件套</span>
+          <h2 class="skill-detail__title">写出来之后，<br/>怎么"调味"</h2>
+          <ul class="skill-detail__points">
+            <li><strong><code class="cmd">/distill</code></strong>：删。竞品按钮太多、信息太满、字体三种用不下去——它问一个问题：<em>这个页面到底要做的"那一件事"是什么？</em>剩下不为这件事服务的，全部砍。</li>
+            <li><strong><code class="cmd">/delight</code></strong>：在功能完整之后，加那一点"人味"。空状态的一句话、loading 的微文案、成功反馈那一下子。规则是：<em>把这点 delight 删掉，功能仍然 100% 可用。</em></li>
+            <li><strong><code class="cmd">/animate</code></strong>：只动 transform 和 opacity，缓动只用 ease-out exponential。如果你在 animate width/top/left，它就在做错事。</li>
+            <li><strong><code class="cmd">/clarify</code></strong>：改 UX 文案。"了解更多" → "查看完整定价"。错误信息不甩锅给用户，按钮描述结果不描述动作。</li>
+          </ul>
+        </div>
+        <div style="display:grid;gap:14px;align-content:start;">
+          <div class="card">
+            <div class="card__num">/distill 的灵魂之问</div>
+            <p class="card__title" style="font-family:var(--font-serif);font-weight:600;">"这个页面，<br/>那一件事是什么？"</p>
+            <p class="card__desc">剩下的全部要为它让路。</p>
+          </div>
+          <div class="card">
+            <div class="card__num">/delight 的硬规则</div>
+            <p class="card__title" style="font-family:var(--font-serif);font-weight:600;">"删掉 delight，<br/>功能仍然 100% 可用。"</p>
+            <p class="card__desc">没有任何东西"依赖"那一笑。</p>
+          </div>
+          <div class="card">
+            <div class="card__num">/clarify 的写作原则</div>
+            <p class="card__title" style="font-family:var(--font-serif);font-weight:600;">"按钮描述结果，<br/>不描述动作。"</p>
+            <p class="card__desc">「保存修改」&gt; 「OK」。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 25 · taste-skill 概述 + 9 风格 ==================== -->
+    <section class="slide" data-section="skills" data-overview="28 · taste-skill · 9 风格 + 3 dial">
+      <div class="taste-grid">
+        <div>
+          <span class="eyebrow">Skill 03 · 风格选择器</span>
+          <h2 class="title-h2" style="margin-top:0.5rem;">/taste-skill <span class="mute" style="font-size:0.7em;">9 风格变体 + 3 个可调 dial</span></h2>
+          <a class="skill-detail__link" href="https://tasteskill.dev" target="_blank" rel="noopener" style="margin-top:8px;">tasteskill.dev · github.com/Leonxlnx/taste-skill ↗</a>
+        </div>
+        <div class="taste-grid__list">
+          <article class="taste-tile" data-style="taste"><div class="taste-tile__name">/taste-skill</div><div class="taste-tile__desc">主 skill。3 个全局 dial：variance / motion / density。</div><div class="taste-tile__sample">DEFAULT 8 / 6 / 4</div></article>
+          <article class="taste-tile" data-style="brutalist"><div class="taste-tile__name">brutalist-skill</div><div class="taste-tile__desc">瑞士印刷 × 军用终端。极端字号对比、单色、CRT 扫描线。</div><div class="taste-tile__sample">DASHBOARD · EDITORIAL</div></article>
+          <article class="taste-tile" data-style="minimalist"><div class="taste-tile__name">minimalist-skill</div><div class="taste-tile__desc">编辑文档风。暖色单色、bento 网格、低饱和 pastel。</div><div class="taste-tile__sample">NOTION-LIKE · CALM</div></article>
+          <article class="taste-tile" data-style="soft"><div class="taste-tile__name">soft-skill</div><div class="taste-tile__desc">高端 agency 范。Awwwards-tier，玻璃感、cinematic 微动效。</div><div class="taste-tile__sample">LUXURY · APPLE-ESQUE</div></article>
+          <article class="taste-tile" data-style="stitch"><div class="taste-tile__name">stitch-skill</div><div class="taste-tile__desc">为 Google Stitch 生成 DESIGN.md，premium 反 AI slop。</div><div class="taste-tile__sample">GOOGLE STITCH</div></article>
+          <article class="taste-tile" data-style="redesign"><div class="taste-tile__name">redesign-skill</div><div class="taste-tile__desc">重做现有页面而不是从零开始。</div><div class="taste-tile__sample">REWORK MODE</div></article>
+          <article class="taste-tile" data-style="output"><div class="taste-tile__name">output-skill</div><div class="taste-tile__desc">规范输出格式，方便嵌入下游工作流。</div><div class="taste-tile__sample">OUTPUT FRAMING</div></article>
+          <article class="taste-tile" data-style="images"><div class="taste-tile__name">images-taste-skill</div><div class="taste-tile__desc">从参考图反推风格 → 转成可复用 SKILL.md。</div><div class="taste-tile__sample">IMG → STYLE</div></article>
+          <article class="taste-tile" data-style="gpt"><div class="taste-tile__name">gpt-tasteskill</div><div class="taste-tile__desc">GPT 友好版本，跨模型迁移。</div><div class="taste-tile__sample">CROSS-MODEL</div></article>
+        </div>
+        <div class="taste-grid__dials">
+          <div class="dial">
+            <div class="dial__name">DESIGN_VARIANCE</div>
+            <div class="dial__bar"><div class="dial__fill" style="width:80%;"></div></div>
+            <div class="dial__range">1=对称 ··· <strong>8=高变化</strong> ··· 10=艺术混乱</div>
+          </div>
+          <div class="dial">
+            <div class="dial__name">MOTION_INTENSITY</div>
+            <div class="dial__bar"><div class="dial__fill" style="width:60%;"></div></div>
+            <div class="dial__range">1=静态 ··· <strong>6=有动效</strong> ··· 10=电影感</div>
+          </div>
+          <div class="dial">
+            <div class="dial__name">VISUAL_DENSITY</div>
+            <div class="dial__bar"><div class="dial__fill" style="width:40%;"></div></div>
+            <div class="dial__range">1=画廊 ··· <strong>4=适中</strong> ··· 10=驾驶舱</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 26 · taste-skill 零基础用法 ==================== -->
+    <section class="slide" data-section="skills" data-overview="29 · taste-skill · 零基础用法">
+      <div class="taste-usage">
+        <header class="fd-explain__head">
+          <span class="eyebrow">零基础怎么用 /taste-skill</span>
+          <h2 class="title-h2" style="margin-top:0.5rem;">
+            9 个子 skill 不用全学 <span style="color:var(--ink-mute);">·</span><br/>
+            <span style="color:var(--accent);">按项目选一个就好</span>
+          </h2>
+        </header>
+
+        <div class="taste-usage__body">
+          <div class="taste-usage__left">
+            <h3 class="taste-usage__h">三步上手</h3>
+            <ol class="taste-steps">
+              <li>
+                <span class="taste-steps__num">1</span>
+                <div>
+                  <strong>安装主 skill 就能用</strong>
+                  <p>装完 <code>/taste-skill</code>，默认 dial 是 <strong>8 / 6 / 4</strong>，对大多数项目够用，什么都不用改。</p>
+                </div>
+              </li>
+              <li>
+                <span class="taste-steps__num">2</span>
+                <div>
+                  <strong>按项目挂一个子 skill</strong>
+                  <p>做具体项目时选一个风格方向挂上去 —— <strong>只挂一个</strong>，不要叠加。挂多了就是乱炖。</p>
+                </div>
+              </li>
+              <li>
+                <span class="taste-steps__num">3</span>
+                <div>
+                  <strong>需要时调 dial</strong>
+                  <p>在聊天里直接说"把 VARIANCE 调到 5" / "MOTION 拉到 8" 就行，不用改文件。</p>
+                </div>
+              </li>
+            </ol>
+          </div>
+
+          <div class="taste-usage__right">
+            <h3 class="taste-usage__h">项目怎么选风格</h3>
+            <ul class="taste-pick">
+              <li>
+                <span class="taste-pick__name"><code>minimalist-skill</code></span>
+                <span class="taste-pick__when">文档 / 后台工具 / Notion 风 / 强调可读性</span>
+              </li>
+              <li>
+                <span class="taste-pick__name"><code>soft-skill</code></span>
+                <span class="taste-pick__when">SaaS 官网 / 产品首页 / 想要"高级感"</span>
+              </li>
+              <li>
+                <span class="taste-pick__name"><code>brutalist-skill</code></span>
+                <span class="taste-pick__when">作品集 / 数据仪表盘 / 有个性、编辑风</span>
+              </li>
+              <li>
+                <span class="taste-pick__name"><code>stitch-skill</code></span>
+                <span class="taste-pick__when">配合 Google Stitch 批量生成界面</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <footer class="taste-usage__foot">
+          <span class="taste-usage__foot__label">三个 dial 是什么意思</span>
+          <div class="taste-usage__foot__items">
+            <div>
+              <strong>VARIANCE</strong>
+              <span>界面多变 or 规整</span>
+              <em>1 对称 ··· 10 艺术混乱</em>
+            </div>
+            <div>
+              <strong>MOTION</strong>
+              <span>动效多寡</span>
+              <em>1 静止 ··· 10 电影级</em>
+            </div>
+            <div>
+              <strong>DENSITY</strong>
+              <span>内容密度</span>
+              <em>1 画廊 ··· 10 驾驶舱</em>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </section>
+
+    <!-- ==================== 27 · web-design-guidelines 一句话 ==================== -->
+    <section class="slide" data-section="skills" data-overview="30 · web-design-guidelines · 一句话带过">
+      <div class="skill-detail">
+        <div class="skill-detail__head">
+          <span class="skill-detail__id">Skill 04 · by Vercel</span>
+          <h2 class="skill-detail__title">/web-design-guidelines</h2>
+          <a class="skill-detail__link" href="https://github.com/vercel-labs/agent-skills" target="_blank" rel="noopener">github.com/vercel-labs/agent-skills ↗</a>
+          <p class="skill-detail__role">最后那一道<strong>事后体检</strong>。</p>
+          <ul class="skill-detail__points">
+            <li><strong>本质</strong>：一个 20 行的小 skill。每次调用时，去 WebFetch Vercel 维护的 guidelines，对你的 UI 跑一遍 audit。</li>
+            <li><strong>能达到的效果</strong>：用 Vercel 的标准做 cross-check —— 看你这一版有没有踩业内已知的坑。</li>
+            <li><strong>注意</strong>：依赖联网、偏合规层。知道有这么个东西，需要的时候再用就行。</li>
+          </ul>
+        </div>
+        <div class="skill-detail__right">
+          <div class="terminal">
+            <span class="comment"># 用法</span><br/>
+            <span class="prompt">›</span> <span class="cmd-text">/web-design-guidelines src/components/Hero.tsx</span><br/>
+            → fetch Vercel guidelines …<br/>
+            → check rules against file …<br/>
+            <br/>
+            <span class="comment"># 输出（terse: file:line）</span><br/>
+            Hero.tsx:24 missing aria-label on icon button<br/>
+            Hero.tsx:51 link target=_blank without rel=noopener<br/>
+            Hero.tsx:78 button without focus-visible state
+          </div>
+          <div class="card">
+            <p class="card__title" style="font-family:var(--font-serif);">"做完之后，<br/><span style="color:var(--accent);">让 Vercel 帮你看一眼</span>。"</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 27 · 4 个 skill 工作流 ==================== -->
+    <section class="slide" data-section="skills" data-overview="31 · 4 个 skill 怎么配合用">
+      <div class="workflow">
+        <div>
+          <span class="eyebrow">Workflow · 4 skills · 1 pipeline</span>
+          <h2 class="title-h2" style="margin-top:0.5rem;">把 4 个 skill <span class="accent">串成一条流水线</span></h2>
+        </div>
+        <div class="workflow__rail">
+          <div class="workflow__step" data-stage="thinking">
+            <div class="workflow__step__pin"></div>
+            <span class="workflow__step__when">Stage 01 · 想清楚</span>
+            <div class="workflow__step__name">/frontend-design</div>
+            <div class="workflow__step__skill">＋ /shape</div>
+            <p class="workflow__step__act">先有审美方向，先想清楚做什么、给谁、要什么感觉。<br/>没有这一步，后面全是装修。</p>
+          </div>
+          <div class="workflow__step" data-stage="craft">
+            <div class="workflow__step__pin"></div>
+            <span class="workflow__step__when">Stage 02 · 做出来</span>
+            <div class="workflow__step__name">/impeccable craft</div>
+            <div class="workflow__step__skill">＋ /layout · /typeset · /colorize</div>
+            <p class="workflow__step__act">端到端实现 + 视觉迭代。在浏览器里看到，不满意继续改，到差不多为止。</p>
+          </div>
+          <div class="workflow__step" data-stage="style">
+            <div class="workflow__step__pin"></div>
+            <span class="workflow__step__when">Stage 03 · 调风味</span>
+            <div class="workflow__step__name">/taste-skill</div>
+            <div class="workflow__step__skill">＋ /bolder · /quieter · /distill · /delight</div>
+            <p class="workflow__step__act">挂一个具体风格变体（brutalist / minimalist / soft）；用 dial 调强弱，让风味稳定。</p>
+          </div>
+          <div class="workflow__step" data-stage="audit">
+            <div class="workflow__step__pin"></div>
+            <span class="workflow__step__when">Stage 04 · 验收</span>
+            <div class="workflow__step__name">/critique &amp; /audit &amp; /polish</div>
+            <div class="workflow__step__skill">＋ /web-design-guidelines</div>
+            <p class="workflow__step__act">三件套 + Vercel 体检。出问题回到 03 调风味、回到 02 改实现。直到能上线。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 28 · 自己的 skill 集合 ==================== -->
+    <section class="slide" data-section="skills" data-overview="32 · 从用 skill 到做自己的 skill">
+      <div class="own-skill">
+        <div>
+          <span class="eyebrow">Next Step · Personal Pipeline</span>
+          <p class="own-skill__quote">
+            从 <em>用很多 skill</em>，到 <br/>
+            <em>做一个自己的 skill 集合</em>，<br/>
+            是一次很关键的进阶。
+          </p>
+          <p class="subtle" style="font-size:1rem;line-height:1.6;margin-top:1.2rem;max-width:30ch;">
+            不只是装别人的 skill —— <strong style="color:var(--ink);">而是开始建立自己的设计调试流程，让自己知道什么阶段该做什么事。</strong>
+          </p>
+        </div>
+        <div>
+          <span class="kicker" style="display:block;margin-bottom:0.5rem;">为什么必须自己来</span>
+          <ul class="own-skill__steps">
+            <li>
+              <div>
+                <strong>skill 多了，使用成本会变高</strong>
+                <small>哪个 skill 解决什么问题？什么阶段该用哪个？怎么组合？— 完全靠记忆很容易乱。</small>
+              </div>
+            </li>
+            <li>
+              <div>
+                <strong>每个人的痛点不一样</strong>
+                <small>别人的 skill 是按别人的项目打磨的。你的项目有自己的风味、自己的反模式。</small>
+              </div>
+            </li>
+            <li>
+              <div>
+                <strong>把方法沉成 skill，是把经验固定下来</strong>
+                <small>这次踩过的坑，下次启动新项目就不需要再踩。它会自动加载。</small>
+              </div>
+            </li>
+            <li>
+              <div>
+                <strong>从工具使用，上升到工作流思维</strong>
+                <small>什么时候做审美方向选择 / 风格拉齐 / 页面 audit / 最后一轮 polish — 你自己排好。</small>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 33 · 实战案例 · 同一页面 · 不同 skill ==================== -->
+    <section class="slide" data-section="skills" data-overview="33 · 实战案例 · 同一页面，不同 skill">
+      <div class="landing-showcase">
+        <header class="landing-showcase__head">
+          <span class="eyebrow">实战案例 · 同一个产品，4 个 skill 路径的对照</span>
+          <h2 class="title-h2" style="margin-top:0.5rem;">
+            同一个 Landing · <span style="color:var(--accent);">用不同 skill 会长成什么样</span>
+          </h2>
+          <p class="subtle" style="margin-top:0.6rem;font-size:0.98rem;max-width:68ch;line-height:1.5;">
+            配套的 <strong style="color:var(--ink);">DeploySea Landing</strong> 是一个小实验：<strong style="color:var(--ink);">需求不变、提示词近似、只换 skill</strong>，看产出差异。
+            每个页面右下角按 <kbd style="font-family:var(--font-mono);padding:1px 6px;background:color-mix(in oklch, var(--accent) 14%, transparent);border-radius:3px;">i</kbd> 能看到当版的指令、判断和 skill 规则。
+          </p>
+        </header>
+
+        <div class="landing-showcase__grid">
+          <article class="lp-card">
+            <header class="lp-card__head">
+              <span class="lp-card__num">v1</span>
+              <h3 class="lp-card__title">
+                <span class="lp-card__skill lp-card__skill--none">无 skill</span>
+                反面教材 · AI 默认长相
+              </h3>
+            </header>
+            <div class="lp-preview">
+              <iframe src="../landing/v1/index.html" loading="lazy" title="v1"></iframe>
+            </div>
+            <p class="lp-card__desc"><strong>不启用任何 skill、不挑方向</strong>——让 AI 默认写一个。出来的就是蓝色 #2563eb、居中 Hero、等距卡片、emoji、"500+ 团队信赖"。v2/v3/v4 的对照起点。</p>
+            <a class="lp-card__open" href="../landing/#v1" target="_blank" rel="noopener">
+              <span>打开 v1 实例</span>
+              <span class="lp-card__open__path">../landing/#v1 ↗</span>
+            </a>
+          </article>
+
+          <article class="lp-card">
+            <header class="lp-card__head">
+              <span class="lp-card__num">v2</span>
+              <h3 class="lp-card__title">
+                <span class="lp-card__skill"><code>/frontend-design</code></span>
+                通用审美型 skill
+              </h3>
+            </header>
+            <div class="lp-preview">
+              <iframe src="../landing/v2/index.html" loading="lazy" title="v2"></iframe>
+            </div>
+            <p class="lp-card__desc">挂 Anthropic 官方 <strong>/frontend-design</strong>。它强制你挑一个极端方向（选了 Editorial）、拒绝 AI slop、distinctive 字体配对。<strong>但不读项目上下文</strong>——于是 v3 会切换路径。</p>
+            <a class="lp-card__open" href="../landing/#v2" target="_blank" rel="noopener">
+              <span>打开 v2 实例</span>
+              <span class="lp-card__open__path">../landing/#v2 ↗</span>
+            </a>
+          </article>
+
+          <article class="lp-card">
+            <header class="lp-card__head">
+              <span class="lp-card__num">v3</span>
+              <h3 class="lp-card__title">
+                <span class="lp-card__skill"><code>/impeccable</code></span>
+                项目约束型 skill
+              </h3>
+            </header>
+            <div class="lp-preview">
+              <iframe src="../landing/v3/index.html" loading="lazy" title="v3"></iframe>
+            </div>
+            <p class="lp-card__desc">先跑 <strong>/impeccable teach</strong> 把项目主张写进 <code>.impeccable.md</code>，之后所有设计命令都读这份上下文。出来的 Bento 网格是在<strong>「你的项目要做什么」</strong>约束下生成的。</p>
+            <a class="lp-card__open" href="../landing/#v3" target="_blank" rel="noopener">
+              <span>打开 v3 实例</span>
+              <span class="lp-card__open__path">../landing/#v3 ↗</span>
+            </a>
+          </article>
+
+          <article class="lp-card">
+            <header class="lp-card__head">
+              <span class="lp-card__num">v4</span>
+              <h3 class="lp-card__title">
+                <span class="lp-card__skill"><code>taste-skill</code></span>
+                社区全能型 skill
+              </h3>
+            </header>
+            <div class="lp-preview">
+              <iframe src="../landing/v4/index.html" loading="lazy" title="v4"></iframe>
+            </div>
+            <p class="lp-card__desc">换 <strong>taste-skill</strong>（社区方案）。<strong>不用 teach、不读项目上下文</strong>，用自带 3 档 dial（<strong>8/6/4</strong>）+ 长反面清单约束产出。v3 vs v4 = "项目约束" vs "全能自带"。</p>
+            <a class="lp-card__open" href="../landing/#v4" target="_blank" rel="noopener">
+              <span>打开 v4 实例</span>
+              <span class="lp-card__open__path">../landing/#v4 ↗</span>
+            </a>
+          </article>
+        </div>
+
+        <footer class="landing-showcase__foot">
+          <a class="landing-showcase__compare" href="../landing/" target="_blank" rel="noopener">
+            <strong>打开版本切换器</strong> · 按键盘 <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> <kbd>4</kbd> 对照看
+            <span>../landing/ ↗</span>
+          </a>
+        </footer>
+      </div>
+    </section>
+
+    <!-- ==================== 34 · DIVIDER · Pencil & Claude Design ==================== -->
+    <section class="slide" data-section="design" data-overview="34 · — Pencil &amp; Claude Design —">
+      <div class="divider">
+        <div class="divider__big-num">PD</div>
+        <div class="divider__top">
+          <span>Part 1 · 调试 · 延展演示</span>
+          <span>探索 + 视觉表达</span>
+        </div>
+        <div class="divider__center">
+          <span class="divider__chapter">Demo · Pencil &amp; Claude Design</span>
+          <h2 class="divider__title">
+            <span class="accent">Pencil</span> &amp;<br/>
+            <span class="accent">Claude Design</span>
+          </h2>
+          <p class="divider__sub">如果说 skills 是规则、流程、审查系统 —— 这两个是探索和表达层的补充。</p>
+        </div>
+        <div class="divider__bottom">
+          <span>pencil.dev / Claude Design</span>
+          <span>截图 · 待补</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 30 · Pencil & Claude Design 演示 ==================== -->
+    <section class="slide" data-section="design" data-overview="35 · 两个工具的位置">
+      <div class="demo-split">
+        <div>
+          <span class="eyebrow">Side-by-Side</span>
+          <h2 class="title-h2" style="margin-top:0.5rem;">Pencil 帮你 <span class="accent">跳出当前 demo 的惯性</span><br/>Claude Design 帮你 <span class="accent">看到表达上限</span></h2>
+        </div>
+        <div class="demo-split__pair">
+          <div class="demo-card">
+            <header class="demo-card__head">
+              <h3 class="demo-card__name">Pencil</h3>
+              <span class="demo-card__url">pencil.dev</span>
+            </header>
+            <span class="demo-card__role">Direction Exploration · 方向探索</span>
+            <figure class="demo-card__shot">
+              <img src="./img-01-pencil.png" alt="Pencil 后台截图" loading="lazy" />
+            </figure>
+            <ul class="demo-card__pts">
+              <li>更偏页面方向探索</li>
+              <li>适合快速看不同设计方案</li>
+              <li>帮自己跳出当前 demo 的惯性表达</li>
+            </ul>
+          </div>
+          <div class="demo-card">
+            <header class="demo-card__head">
+              <h3 class="demo-card__name">Claude Design</h3>
+              <span class="demo-card__url">by Anthropic</span>
+            </header>
+            <span class="demo-card__role">Visual Expression · 视觉表达</span>
+            <figure class="demo-card__shot">
+              <img src="./img-02-claude-design.png" alt="Claude Design 演示截图" loading="lazy" />
+            </figure>
+            <ul class="demo-card__pts">
+              <li>更偏直接生成和视觉表达</li>
+              <li>看设计效果的上限与可能性</li>
+              <li>适合做演示和对比，让大家直观看差异</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 31 · DIVIDER · Part 2 部署 ==================== -->
+    <section class="slide" data-section="deploy" data-overview="36 · — PART 2 · 部署 —">
+      <div class="divider">
+        <div class="divider__big-num">02</div>
+        <div class="divider__top">
+          <span>Part 2 / 3</span>
+          <span>从本地跑通到真正上线</span>
+        </div>
+        <div class="divider__center">
+          <span class="divider__chapter">Part Two</span>
+          <h2 class="divider__title">
+            <span class="accent">部署</span><br/>
+            从「跑得起来」<br/>到「<span class="accent">扛得住</span>」
+          </h2>
+          <p class="divider__sub">不会讲成一堂教程课。重点是让你直观看到：一个项目是怎么真的上线、怎么真的被维护的。</p>
+        </div>
+        <div class="divider__bottom">
+          <span>Vercel · 简单看</span>
+          <span>Dokploy · 重点看</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 32 · Vercel 演示 ==================== -->
+    <section class="slide" data-section="deploy" data-overview="37 · Vercel · 简单看">
+      <div class="deploy-section">
+        <div class="deploy-section__head">
+          <span class="eyebrow">Deploy 01 · Vercel</span>
+          <h2 class="title-h2" style="margin-top:0.5rem;"><span class="accent">Vercel</span><br/>git push 就上线</h2>
+          <p class="subtle" style="font-size:1rem;line-height:1.55;max-width:30ch;">
+            Vercel 是托管式平台，零运维就能把项目挂到公网。是起步最快的选项。
+          </p>
+          <ul class="deploy-section__pts">
+            <li><strong>项目发布的基本过程</strong>是什么样</li>
+            <li>和部署相关的<strong>基础配置</strong>有哪些</li>
+            <li>项目上线后，<strong>后台大概长什么样</strong></li>
+            <li><strong>适合阶段</strong>：demo、个人项目、快速起步</li>
+          </ul>
+        </div>
+        <div class="deploy-section__visuals">
+          <div class="live-demo-card">
+            <div class="live-demo-card__pin">LIVE</div>
+            <div>
+              <span class="live-demo-card__label">现场演示</span>
+              <h3 class="live-demo-card__title">vercel.com / dashboard</h3>
+              <p class="live-demo-card__hint">会演示：<strong>项目列表</strong> → 单次部署详情 → build log → deployment URL。</p>
+            </div>
+            <div class="terminal" style="margin-top:0.6rem;">
+              <span class="comment"># 一次最简部署</span><br/>
+              <span class="prompt">$</span> <span class="cmd-text">git push origin main</span><br/>
+              → Vercel 自动检测 push<br/>
+              → build … <span class="ok">✓</span><br/>
+              → deploy … <span class="ok">✓</span><br/>
+              → live at <span class="cmd-text">your-app.vercel.app</span>
+            </div>
+          </div>
+          <div class="card" style="background:rgba(0,0,0,0.25);">
+            <div class="card__num">关键判断 · Vercel 的位置</div>
+            <p class="card__title" style="font-family:var(--font-serif);font-weight:600;line-height:1.35;">
+              "git push <span style="color:var(--accent);">就上线</span>。<br/>
+              这是 Vercel 给到的<br/>最大价值。"
+            </p>
+            <p class="card__desc">代价是：你被平台规则绑住，且数据库 / 长任务 / 多服务这些事，它不太擅长。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 33 · Dokploy 演示 ==================== -->
+    <section class="slide" data-section="deploy" data-overview="38 · Dokploy · 重点">
+      <div class="deploy-section">
+        <div class="deploy-section__head">
+          <span class="eyebrow">Deploy 02 · Dokploy</span>
+          <h2 class="title-h2" style="margin-top:0.5rem;"><span class="accent">Dokploy</span><br/>自部署面板<br/>统一管理</h2>
+          <p class="subtle" style="font-size:1rem;line-height:1.55;max-width:30ch;">
+            Dokploy 是自己服务器上的部署面板，把<strong style="color:var(--ink);">项目、服务、数据库、反向代理</strong>统一放到一个后台管。
+          </p>
+          <ul class="deploy-section__pts">
+            <li><strong>Dokploy 后台界面</strong>长什么样</li>
+            <li>项目<strong>怎么在 Dokploy 里组织和部署</strong></li>
+            <li><strong>项目 + 数据库</strong> 放在一起怎么管</li>
+            <li>它对<strong>真实产品维护</strong>的意义是什么</li>
+            <li><strong>适合阶段</strong>：多服务、数据库、长期维护</li>
+          </ul>
+        </div>
+        <div class="deploy-section__visuals">
+          <div class="live-demo-card">
+            <div class="live-demo-card__pin">LIVE</div>
+            <div>
+              <span class="live-demo-card__label">现场演示</span>
+              <h3 class="live-demo-card__title">my Dokploy · 真实后台</h3>
+              <p class="live-demo-card__hint">会演示：<strong>项目总览</strong> → 单项目的服务 + 数据库 → 一次真实部署日志。</p>
+            </div>
+            <ul class="live-demo-checklist">
+              <li><span class="checkbox">▸</span> 后台首页：项目总览</li>
+              <li><span class="checkbox">▸</span> 单项目：服务 + 数据库 + 反向代理</li>
+              <li><span class="checkbox">▸</span> 一次真实更新：build → migrate → live</li>
+              <li><span class="checkbox">▸</span> 备份策略 / 域名 / 环境变量管理</li>
+            </ul>
+          </div>
+          <div class="card" style="background:rgba(0,0,0,0.25);">
+            <div class="card__num">关键判断 · Dokploy 的位置</div>
+            <p class="card__title" style="font-family:var(--font-serif);font-weight:600;line-height:1.35;">
+              "当你不只是做一个 demo —<br/>
+              开始有<span style="color:var(--accent);">数据库 / 多个服务 / 长期维护</span>时，<br/>
+              自部署的控制力会更高。"
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 34 · Vercel vs Dokploy ==================== -->
+    <section class="slide" data-section="deploy" data-overview="39 · Vercel vs Dokploy">
+      <div class="deploy-section" style="grid-template-columns: 0.8fr 1.2fr;">
+        <div class="deploy-section__head">
+          <span class="eyebrow">Compare · 不是替代关系</span>
+          <h2 class="title-h2" style="margin-top:0.5rem;">两者的<br/><span class="accent">分工很清楚</span></h2>
+          <p class="subtle" style="font-size:1rem;line-height:1.55;max-width:30ch;margin-top:1rem;">
+            选哪个，不取决于哪个更"高级"。<strong style="color:var(--ink);">取决于你这个项目当前在哪个阶段。</strong>
+          </p>
+        </div>
+        <div>
+          <table class="vs-table">
+            <thead>
+              <tr>
+                <th></th>
+                <th class="vercel">Vercel</th>
+                <th class="dokploy">Dokploy</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>定位</td>
+                <td>托管平台 · git push 即上线</td>
+                <td>自部署 · 自己服务器管全栈</td>
+              </tr>
+              <tr>
+                <td>上手成本</td>
+                <td>极低</td>
+                <td>中（需要一台服务器）</td>
+              </tr>
+              <tr>
+                <td>控制力</td>
+                <td>有限（按平台规则走）</td>
+                <td>高（数据库 / 服务 / 任务都自己管）</td>
+              </tr>
+              <tr>
+                <td>成本曲线</td>
+                <td>开头免费 · 流量大后涨价快</td>
+                <td>固定服务器费用 · 多项目摊薄</td>
+              </tr>
+              <tr>
+                <td>适合阶段</td>
+                <td><strong>demo / 个人项目 / 快速试错</strong></td>
+                <td><strong>真实产品 / 多服务 / 长期维护</strong></td>
+              </tr>
+              <tr>
+                <td>我的用法</td>
+                <td>新项目 / 试错 / 静态页</td>
+                <td><strong>主力 · 项目 + 数据库都放这里</strong></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 35 · DIVIDER · 收束 ==================== -->
+    <section class="slide" data-section="close" data-overview="40 · — 收束 —">
+      <div class="divider">
+        <div class="divider__big-num">03</div>
+        <div class="divider__top">
+          <span>Part 3 / 3</span>
+          <span>带走的 3 件事 · 答疑</span>
+        </div>
+        <div class="divider__center">
+          <span class="divider__chapter">Wrap-up</span>
+          <h2 class="divider__title">
+            带走的<br/>
+            <span class="accent">3 件事</span>
+          </h2>
+          <p class="divider__sub">如果今天只能记住三句话，希望是这三句。</p>
+        </div>
+        <div class="divider__bottom">
+          <span>Closing</span>
+          <span>↓ Q&amp;A</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 36 · 3 件事 ==================== -->
+    <section class="slide" data-section="close" data-overview="41 · 想让大家带走的 3 件事">
+      <div class="takeaway">
+        <div>
+          <span class="eyebrow">Takeaways · 3</span>
+          <h2 class="title-h1" style="margin-top:0.5rem;">今天的话，<br/>就<span style="color:var(--accent)">收束在这三句</span></h2>
+        </div>
+        <div class="takeaway__list">
+          <div class="takeaway__card" data-tone="debug">
+            <div class="takeaway__num">01</div>
+            <div>
+              <span class="kicker">关于 调试</span>
+              <h3 class="takeaway__title">做产品不是<br/>生成完就结束</h3>
+            </div>
+            <p class="takeaway__body">真正拉开差距的，是你能不能继续把它打磨得更像产品。生成只是 0 → 1，剩下的路要自己走。</p>
+          </div>
+          <div class="takeaway__card" data-tone="skill">
+            <div class="takeaway__num">02</div>
+            <div>
+              <span class="kicker">关于 Skill</span>
+              <h3 class="takeaway__title">skill 不是<br/>拿来"装"的</h3>
+            </div>
+            <p class="takeaway__body">而是要进入你的真实工作流。从用很多 skill，到形成自己的 skill 集合 —— 是一个很关键的进阶。</p>
+          </div>
+          <div class="takeaway__card" data-tone="deploy">
+            <div class="takeaway__num">03</div>
+            <div>
+              <span class="kicker">关于 部署</span>
+              <h3 class="takeaway__title">部署不是<br/>最后一步</h3>
+            </div>
+            <p class="takeaway__body">它是你第一次真正面对真实世界。本地跑通和真正上线，中间是两套问题。从这一刻开始，你才真的"有了一个产品"。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 37 · 答疑 ==================== -->
+    <section class="slide" data-section="close" data-overview="42 · 答疑">
+      <div class="qa qa--solo">
+        <div>
+          <span class="eyebrow">Q&amp;A</span>
+          <h2 class="qa__title">
+            问什么<br/>
+            都可以
+            <small>Live Q&amp;A · 2026.04.23</small>
+          </h2>
+          <p class="qa__hint">
+            没问出来的、想继续聊的 —— <em>评论区、社群、下一期直播</em>，继续。
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 38 · END ==================== -->
+    <section class="slide" data-section="close" data-overview="43 · End · 谢谢">
+      <div class="end">
+        <h2 class="end__big">谢谢<span class="accent">你</span>。</h2>
+        <p class="subtle" style="font-size:1.2rem;max-width:36ch;margin:0 auto;">
+          下一次见面，希望你的 demo<br/>已经在线上跑了。
+        </p>
+        <div class="end__sub">A梦 · 2026.04.23 · Live</div>
+      </div>
+    </section>
+
+  </main>
+
+  <nav class="nav" aria-label="幻灯片导航">
+    <button id="overview" aria-label="概览模式 (O)" title="概览模式 (O)">▦</button>
+    <button id="prev" aria-label="上一页">‹</button>
+    <span class="nav__count"><strong id="cur2">1</strong>&nbsp;/&nbsp;<span id="total2">1</span></span>
+    <button id="next" aria-label="下一页">›</button>
+  </nav>
+
+  <script>
+    (function () {
+      const SECTION_LABELS = {
+        open: '开场 · OPEN',
+        debug: 'Part 1 · 调试 DEBUG',
+        skills: 'Skills · 4 in 1',
+        design: 'Pencil & Claude Design',
+        deploy: 'Part 2 · 部署 DEPLOY',
+        close: '收束 · CLOSE',
+      };
+
+      const $deck = document.getElementById('deck');
+      const $progress = document.getElementById('progress');
+      const $cur = document.getElementById('cur');
+      const $cur2 = document.getElementById('cur2');
+      const $total = document.getElementById('total');
+      const $total2 = document.getElementById('total2');
+      const $sectionName = document.getElementById('section-name');
+      const $themeToggle = document.getElementById('theme-toggle');
+      const slides = Array.from(document.querySelectorAll('.slide'));
+      const total = slides.length;
+
+      // ---------- theme ----------
+      const THEME_KEY = 'deepsea-slides-theme';
+      function applyTheme(t) {
+        const theme = t === 'light' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', theme);
+        try { localStorage.setItem(THEME_KEY, theme); } catch (e) {}
+      }
+      function initTheme() {
+        let saved = null;
+        try { saved = localStorage.getItem(THEME_KEY); } catch (e) {}
+        if (saved === 'light' || saved === 'dark') { applyTheme(saved); return; }
+        const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+        applyTheme(prefersLight ? 'light' : 'dark');
+      }
+      function toggleTheme() {
+        const cur = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+        applyTheme(cur === 'light' ? 'dark' : 'light');
+      }
+      $themeToggle.addEventListener('click', toggleTheme);
+      initTheme();
+
+      $total.textContent = String(total).padStart(2, '0');
+      $total2.textContent = String(total);
+
+      let idx = 0;
+
+      function go(n, { push = true, force = false } = {}) {
+        const next = Math.max(0, Math.min(total - 1, n));
+        if (!force && next === idx && document.body.classList.contains('is-overview') === false) return;
+        slides[idx].classList.remove('is-active');
+        idx = next;
+        slides[idx].classList.add('is-active');
+
+        const section = slides[idx].dataset.section || 'open';
+        $deck.dataset.section = section;
+        $sectionName.textContent = SECTION_LABELS[section] || section.toUpperCase();
+
+        update();
+        if (push) history.replaceState(null, '', `#${idx + 1}`);
+      }
+
+      function update() {
+        const num = String(idx + 1).padStart(2, '0');
+        $cur.textContent = num;
+        $cur2.textContent = String(idx + 1);
+        const pct = total <= 1 ? 100 : (idx / (total - 1)) * 100;
+        $progress.style.width = pct + '%';
+      }
+
+      function toggleOverview() {
+        const on = !document.body.classList.contains('is-overview');
+        document.body.classList.toggle('is-overview', on);
+        $deck.classList.toggle('is-overview', on);
+        if (on) {
+          // wire click on slides to jump
+          slides.forEach((s, i) => {
+            s.onclick = () => { toggleOverview(); go(i); };
+          });
+          // ensure overview attribute exists
+          slides.forEach((s, i) => {
+            if (!s.dataset.overview) s.dataset.overview = String(i + 1);
+          });
+        } else {
+          slides.forEach((s) => { s.onclick = null; });
+        }
+      }
+
+      // controls
+      document.getElementById('prev').addEventListener('click', () => go(idx - 1));
+      document.getElementById('next').addEventListener('click', () => go(idx + 1));
+      document.getElementById('overview').addEventListener('click', toggleOverview);
+
+      window.addEventListener('keydown', (e) => {
+        if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
+        if (['ArrowRight', 'PageDown', ' '].includes(e.key)) { e.preventDefault(); go(idx + 1); }
+        else if (['ArrowLeft', 'PageUp'].includes(e.key)) { e.preventDefault(); go(idx - 1); }
+        else if (e.key === 'Home') { go(0); }
+        else if (e.key === 'End') { go(total - 1); }
+        else if (e.key.toLowerCase() === 'o') { toggleOverview(); }
+        else if (e.key.toLowerCase() === 't') { toggleTheme(); }
+        else if (e.key === 'Escape' && document.body.classList.contains('is-overview')) { toggleOverview(); }
+      });
+
+      // touch swipe
+      let touchX = null;
+      window.addEventListener('touchstart', (e) => { touchX = e.changedTouches[0].clientX; }, { passive: true });
+      window.addEventListener('touchend', (e) => {
+        if (touchX == null || document.body.classList.contains('is-overview')) return;
+        const dx = e.changedTouches[0].clientX - touchX;
+        if (Math.abs(dx) > 50) go(idx + (dx < 0 ? 1 : -1));
+        touchX = null;
+      }, { passive: true });
+
+      // init — force-activate a slide immediately so the first frame is painted.
+      // previous bug: go(0) when idx was already 0 hit the early-return guard
+      // and the cover never got `is-active`, so nothing rendered.
+      const hashIdx = parseInt((location.hash || '#1').slice(1), 10);
+      const startIdx = (!Number.isNaN(hashIdx) && hashIdx >= 1 && hashIdx <= total) ? hashIdx - 1 : 0;
+      go(startIdx, { push: false, force: true });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Landing — Version Switcher</title>
+  <style>
+    :root {
+      --bar-h: 48px;
+      --ink: #0f172a;
+      --ink-dim: #64748b;
+      --line: #e2e8f0;
+      --bg: #f8fafc;
+      --accent: #2563eb;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; height: 100%; background: var(--bg); }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif;
+      color: var(--ink);
+    }
+
+    .switcher {
+      position: fixed; top: 0; left: 0; right: 0;
+      height: var(--bar-h); z-index: 50;
+      background: rgba(255,255,255,0.94);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line);
+      display: flex; align-items: center;
+      padding: 0 16px; gap: 16px;
+      font-size: 13px;
+    }
+    .switcher__brand {
+      font-weight: 600; color: var(--ink);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .switcher__brand .badge {
+      display: inline-block; padding: 2px 8px;
+      background: var(--ink); color: white;
+      border-radius: 4px; font-size: 10px;
+      font-weight: 700; letter-spacing: 0.08em;
+    }
+    .switcher__divider {
+      width: 1px; height: 20px; background: var(--line);
+    }
+    .switcher__tabs {
+      display: flex; gap: 4px;
+      background: #f1f5f9;
+      padding: 4px; border-radius: 8px;
+    }
+    .switcher__tab {
+      appearance: none; border: 0;
+      padding: 6px 14px; border-radius: 5px;
+      font-family: inherit; font-size: 13px; font-weight: 500;
+      color: var(--ink-dim); cursor: pointer;
+      transition: all 0.15s ease;
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .switcher__tab:hover { color: var(--ink); }
+    .switcher__tab[aria-pressed="true"] {
+      background: white;
+      color: var(--ink);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    .switcher__tab .label-en {
+      font-family: ui-monospace, Menlo, monospace;
+      font-size: 11px; opacity: 0.7;
+    }
+
+    .switcher__spacer { flex: 1; }
+
+    .switcher__meta {
+      color: var(--ink-dim); font-size: 12px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .switcher__meta a {
+      color: var(--ink-dim);
+      text-decoration: none;
+      padding: 4px 8px;
+      border-radius: 4px;
+      transition: all 0.15s ease;
+    }
+    .switcher__meta a:hover { color: var(--ink); background: #f1f5f9; }
+    .switcher__meta kbd {
+      font-family: ui-monospace, Menlo, monospace;
+      font-size: 10px;
+      background: #f1f5f9;
+      border: 1px solid var(--line);
+      border-radius: 3px;
+      padding: 1px 5px;
+      color: var(--ink-dim);
+    }
+
+    .frame-wrap {
+      position: absolute;
+      top: var(--bar-h); left: 0; right: 0; bottom: 0;
+      background: white;
+    }
+    .frame {
+      width: 100%; height: 100%;
+      border: 0; display: block;
+      background: white;
+    }
+
+    @media (max-width: 640px) {
+      .switcher { padding: 0 8px; gap: 8px; }
+      .switcher__brand .text { display: none; }
+      .switcher__meta { display: none; }
+      .switcher__tab { padding: 6px 10px; }
+      .switcher__tab .label-en { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="switcher" role="toolbar" aria-label="版本切换">
+    <span class="switcher__brand">
+      <span class="badge">DEMO</span>
+      <span class="text">Landing Page · 版本对比</span>
+    </span>
+
+    <span class="switcher__divider" aria-hidden="true"></span>
+
+    <div class="switcher__tabs" role="tablist">
+      <button class="switcher__tab" role="tab" data-version="v1" aria-pressed="false">
+        v1 <span class="label-en">traditional</span>
+      </button>
+      <button class="switcher__tab" role="tab" data-version="v2" aria-pressed="false">
+        v2 <span class="label-en">iteration</span>
+      </button>
+      <button class="switcher__tab" role="tab" data-version="v3" aria-pressed="false">
+        v3 <span class="label-en">bento</span>
+      </button>
+      <button class="switcher__tab" role="tab" data-version="v4" aria-pressed="false">
+        v4 <span class="label-en">taste-skill</span>
+      </button>
+    </div>
+
+    <span class="switcher__spacer"></span>
+
+    <div class="switcher__meta">
+      <span><kbd>1</kbd>/<kbd>2</kbd>/<kbd>3</kbd>/<kbd>4</kbd> 快速切换</span>
+      <a id="open-new" href="#" target="_blank" rel="noopener">在新窗口打开 ↗</a>
+    </div>
+  </header>
+
+  <div class="frame-wrap">
+    <iframe id="frame" class="frame" src="" title="Landing Page Preview" loading="eager"></iframe>
+  </div>
+
+  <script>
+    (function () {
+      const versions = ['v1', 'v2', 'v3', 'v4'];
+      const tabs = Array.from(document.querySelectorAll('.switcher__tab'));
+      const $frame = document.getElementById('frame');
+      const $openNew = document.getElementById('open-new');
+
+      function urlFor(v) { return `./${v}/index.html`; }
+
+      function activate(v, { push = true } = {}) {
+        if (!versions.includes(v)) v = 'v1';
+        tabs.forEach(t => t.setAttribute('aria-pressed', String(t.dataset.version === v)));
+        const url = urlFor(v);
+        // only reload the iframe if the version actually changed
+        if (!$frame.src || !$frame.src.endsWith(url.replace('./', ''))) {
+          $frame.src = url;
+        }
+        $openNew.href = url;
+        document.title = `Landing · ${v}`;
+        if (push) history.replaceState(null, '', `#${v}`);
+      }
+
+      tabs.forEach(t => {
+        t.addEventListener('click', () => activate(t.dataset.version));
+      });
+
+      window.addEventListener('keydown', (e) => {
+        // ignore when iframe is focused — user is interacting with the page
+        if (e.target && e.target.tagName === 'INPUT') return;
+        const map = { '1': 'v1', '2': 'v2', '3': 'v3', '4': 'v4' };
+        if (map[e.key]) activate(map[e.key]);
+      });
+
+      // initial: hash > default v1
+      const initial = (location.hash || '').replace('#', '') || 'v1';
+      activate(initial);
+    })();
+  </script>
+</body>
+</html>

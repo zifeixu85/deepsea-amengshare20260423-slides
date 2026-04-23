@@ -1,0 +1,563 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DeploySea — 一键把 Demo 部署成正式产品</title>
+  <meta name="description" content="DeploySea 让你 5 分钟把本地 Demo 部署上线，自动配置环境、监控与回滚。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --primary-light: #dbeafe;
+      --text: #111827;
+      --text-muted: #6b7280;
+      --bg: #ffffff;
+      --bg-alt: #f9fafb;
+      --border: #e5e7eb;
+      --success: #10b981;
+      --radius: 8px;
+      --shadow-sm: 0 1px 2px 0 rgba(0,0,0,0.05);
+      --shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.05);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.05);
+      --container: 1200px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    img { max-width: 100%; display: block; }
+    a { color: var(--primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .container { max-width: var(--container); margin: 0 auto; padding: 0 24px; }
+
+    /* ===== Navbar ===== */
+    .navbar {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+    }
+    .navbar__inner {
+      display: flex; align-items: center; justify-content: space-between;
+      height: 64px;
+    }
+    .navbar__logo {
+      font-weight: 700; font-size: 20px; color: var(--text);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .navbar__logo .dot {
+      width: 24px; height: 24px; border-radius: 6px; background: var(--primary);
+      display: inline-block;
+    }
+    .navbar__menu { display: flex; gap: 32px; align-items: center; }
+    .navbar__menu a { color: var(--text-muted); font-size: 15px; font-weight: 500; }
+    .navbar__menu a:hover { color: var(--text); text-decoration: none; }
+    .navbar__cta { display: flex; gap: 12px; align-items: center; }
+
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 10px 20px; border-radius: var(--radius);
+      font-weight: 500; font-size: 15px; cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.15s ease;
+      text-decoration: none;
+    }
+    .btn:hover { text-decoration: none; }
+    .btn--primary { background: var(--primary); color: white; }
+    .btn--primary:hover { background: var(--primary-dark); box-shadow: var(--shadow); }
+    .btn--ghost { background: transparent; color: var(--text); border-color: var(--border); }
+    .btn--ghost:hover { background: var(--bg-alt); }
+    .btn--lg { padding: 14px 28px; font-size: 16px; }
+
+    /* ===== Hero ===== */
+    .hero {
+      padding: 96px 0 80px;
+      text-align: center;
+      background: linear-gradient(180deg, #fafafa 0%, #ffffff 100%);
+    }
+    .hero__badge {
+      display: inline-block;
+      padding: 6px 14px;
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 24px;
+    }
+    .hero__title {
+      font-size: clamp(36px, 5vw, 56px);
+      font-weight: 700;
+      line-height: 1.15;
+      margin-bottom: 24px;
+      letter-spacing: -0.02em;
+    }
+    .hero__title em {
+      font-style: normal;
+      color: var(--primary);
+    }
+    .hero__sub {
+      font-size: 18px;
+      color: var(--text-muted);
+      max-width: 640px;
+      margin: 0 auto 36px;
+    }
+    .hero__ctas {
+      display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+      margin-bottom: 56px;
+    }
+    .hero__visual {
+      max-width: 920px;
+      margin: 0 auto;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--border);
+      background: #1e293b;
+      aspect-ratio: 16 / 9;
+      position: relative;
+    }
+    .hero__visual::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 32px;
+      background: #0f172a;
+      border-bottom: 1px solid #334155;
+    }
+    .hero__visual::after {
+      content: '● ● ●';
+      position: absolute; top: 8px; left: 16px;
+      color: #475569; font-size: 11px; letter-spacing: 6px;
+    }
+    .hero__visual-fake {
+      position: absolute;
+      top: 32px; left: 0; right: 0; bottom: 0;
+      padding: 24px;
+      font-family: ui-monospace, Menlo, monospace;
+      font-size: 13px;
+      color: #cbd5e1;
+      line-height: 1.7;
+    }
+    .hero__visual-fake .ok { color: #10b981; }
+    .hero__visual-fake .warn { color: #fbbf24; }
+    .hero__visual-fake .prompt { color: #38bdf8; }
+
+    /* ===== Logos ===== */
+    .logos {
+      padding: 56px 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-alt);
+    }
+    .logos__title {
+      text-align: center; color: var(--text-muted);
+      font-size: 13px; font-weight: 500;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      margin-bottom: 32px;
+    }
+    .logos__grid {
+      display: flex; justify-content: space-around; align-items: center;
+      gap: 32px; flex-wrap: wrap;
+      filter: grayscale(1); opacity: 0.6;
+    }
+    .logos__grid span { font-weight: 700; font-size: 20px; color: #475569; }
+
+    /* ===== Features ===== */
+    .features { padding: 96px 0; }
+    .section__head { text-align: center; margin-bottom: 64px; }
+    .section__title {
+      font-size: clamp(28px, 3.5vw, 40px); font-weight: 700;
+      margin-bottom: 16px; letter-spacing: -0.01em;
+    }
+    .section__sub {
+      color: var(--text-muted); font-size: 17px;
+      max-width: 560px; margin: 0 auto;
+    }
+    .features__grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 32px;
+    }
+    .feature {
+      padding: 32px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--bg);
+      transition: all 0.2s ease;
+    }
+    .feature:hover { box-shadow: var(--shadow); transform: translateY(-2px); }
+    .feature__icon {
+      width: 48px; height: 48px;
+      background: var(--primary-light);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+    .feature__title { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+    .feature__desc { color: var(--text-muted); font-size: 15px; }
+
+    /* ===== Testimonials ===== */
+    .testimonials {
+      padding: 96px 0;
+      background: var(--bg-alt);
+    }
+    .testimonials__grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+    }
+    .quote {
+      padding: 32px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+    .quote__text {
+      font-size: 16px; color: var(--text);
+      margin-bottom: 24px; line-height: 1.6;
+    }
+    .quote__author {
+      display: flex; align-items: center; gap: 12px;
+    }
+    .quote__avatar {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: linear-gradient(135deg, #93c5fd, #2563eb);
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-weight: 600; font-size: 14px;
+    }
+    .quote__name { font-weight: 600; font-size: 14px; }
+    .quote__role { color: var(--text-muted); font-size: 13px; }
+
+    /* ===== Pricing ===== */
+    .pricing { padding: 96px 0; }
+    .pricing__grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      max-width: 960px; margin: 0 auto;
+    }
+    .price {
+      padding: 40px 32px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--bg);
+    }
+    .price--featured {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px var(--primary-light);
+      position: relative;
+    }
+    .price--featured::before {
+      content: '推荐'; position: absolute; top: -12px; left: 50%;
+      transform: translateX(-50%);
+      background: var(--primary); color: white;
+      padding: 4px 12px; border-radius: 999px;
+      font-size: 12px; font-weight: 600;
+    }
+    .price__name { font-size: 18px; font-weight: 600; margin-bottom: 12px; }
+    .price__amount {
+      font-size: 40px; font-weight: 700; margin-bottom: 4px;
+      letter-spacing: -0.02em;
+    }
+    .price__amount small { font-size: 16px; color: var(--text-muted); font-weight: 400; }
+    .price__desc { color: var(--text-muted); font-size: 14px; margin-bottom: 24px; }
+    .price__list { list-style: none; margin-bottom: 32px; }
+    .price__list li {
+      padding: 8px 0; font-size: 14px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .price__list li::before {
+      content: '✓'; color: var(--success); font-weight: 700;
+    }
+    .price .btn { width: 100%; }
+
+    /* ===== CTA ===== */
+    .cta {
+      padding: 96px 0;
+      text-align: center;
+      background: linear-gradient(135deg, #1e3a8a, #2563eb);
+      color: white;
+    }
+    .cta h2 { font-size: clamp(28px, 4vw, 40px); margin-bottom: 16px; font-weight: 700; }
+    .cta p { font-size: 17px; opacity: 0.9; margin-bottom: 32px; }
+    .cta .btn--primary { background: white; color: var(--primary); }
+    .cta .btn--primary:hover { background: #f3f4f6; }
+
+    /* ===== Footer ===== */
+    .footer {
+      padding: 56px 0 32px;
+      border-top: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .footer__grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 48px;
+      margin-bottom: 48px;
+    }
+    .footer__brand p { color: var(--text-muted); font-size: 14px; margin-top: 12px; max-width: 280px; }
+    .footer__col h4 { font-size: 14px; margin-bottom: 16px; font-weight: 600; }
+    .footer__col ul { list-style: none; }
+    .footer__col li { padding: 6px 0; }
+    .footer__col a { color: var(--text-muted); font-size: 14px; }
+    .footer__col a:hover { color: var(--text); text-decoration: none; }
+    .footer__bottom {
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
+      color: var(--text-muted); font-size: 13px;
+    }
+    @media (max-width: 768px) {
+      .navbar__menu { display: none; }
+      .footer__grid { grid-template-columns: 1fr; gap: 32px; }
+      .footer__bottom { flex-direction: column; gap: 12px; }
+      .hero { padding: 64px 0 56px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="container navbar__inner">
+      <a href="#" class="navbar__logo"><span class="dot"></span>DeploySea</a>
+      <nav class="navbar__menu">
+        <a href="#features">功能</a>
+        <a href="#pricing">价格</a>
+        <a href="#docs">文档</a>
+        <a href="#blog">博客</a>
+      </nav>
+      <div class="navbar__cta">
+        <a href="#" class="btn btn--ghost">登录</a>
+        <a href="#" class="btn btn--primary">免费开始</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container">
+      <span class="hero__badge">🚀 V1.0 已发布</span>
+      <h1 class="hero__title">让 <em>Demo</em> 在 5 分钟内<br />变成真正的产品</h1>
+      <p class="hero__sub">
+        DeploySea 自动处理环境配置、依赖安装、监控告警与一键回滚，让你专注写代码，而不是改 YAML。
+      </p>
+      <div class="hero__ctas">
+        <a href="#" class="btn btn--primary btn--lg">免费试用 14 天</a>
+        <a href="#" class="btn btn--ghost btn--lg">查看演示 →</a>
+      </div>
+      <div class="hero__visual">
+        <div class="hero__visual-fake">
+          <div><span class="prompt">$</span> deploysea push --env=prod</div>
+          <div>→ Building image &nbsp;<span class="ok">✓</span></div>
+          <div>→ Running migrations &nbsp;<span class="ok">✓</span></div>
+          <div>→ Deploying to 3 regions &nbsp;<span class="ok">✓</span></div>
+          <div>→ Healthcheck passed &nbsp;<span class="ok">✓</span></div>
+          <div style="margin-top:12px;">🎉 Live at https://app.example.com</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Logos -->
+  <section class="logos">
+    <div class="container">
+      <p class="logos__title">已被 500+ 团队信赖</p>
+      <div class="logos__grid">
+        <span>ACME</span><span>NOVA</span><span>STELLAR</span>
+        <span>QUANTUM</span><span>ORBIT</span><span>PIXEL</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="features" id="features">
+    <div class="container">
+      <div class="section__head">
+        <h2 class="section__title">为什么选择 DeploySea</h2>
+        <p class="section__sub">从本地跑得起来，到线上扛得住，我们把每一步都自动化。</p>
+      </div>
+      <div class="features__grid">
+        <div class="feature">
+          <div class="feature__icon">⚡</div>
+          <h3 class="feature__title">秒级部署</h3>
+          <p class="feature__desc">基于增量构建，平均 30 秒完成一次完整部署。</p>
+        </div>
+        <div class="feature">
+          <div class="feature__icon">🛡️</div>
+          <h3 class="feature__title">一键回滚</h3>
+          <p class="feature__desc">出问题时不用手忙脚乱，一个按钮回到上一个稳定版本。</p>
+        </div>
+        <div class="feature">
+          <div class="feature__icon">📊</div>
+          <h3 class="feature__title">实时监控</h3>
+          <p class="feature__desc">CPU、内存、错误率、日志，全部在一个面板里看清楚。</p>
+        </div>
+        <div class="feature">
+          <div class="feature__icon">🔐</div>
+          <h3 class="feature__title">企业级安全</h3>
+          <p class="feature__desc">自动 HTTPS、密钥管理、SOC2 合规，一开始就做对。</p>
+        </div>
+        <div class="feature">
+          <div class="feature__icon">🌐</div>
+          <h3 class="feature__title">全球加速</h3>
+          <p class="feature__desc">12 个边缘节点，自动调度到最近用户，延迟低于 50ms。</p>
+        </div>
+        <div class="feature">
+          <div class="feature__icon">🤝</div>
+          <h3 class="feature__title">团队协作</h3>
+          <p class="feature__desc">PR 预览、评审记录、操作审计，多人协作不打架。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section class="testimonials">
+    <div class="container">
+      <div class="section__head">
+        <h2 class="section__title">用户怎么说</h2>
+        <p class="section__sub">真实团队的真实反馈。</p>
+      </div>
+      <div class="testimonials__grid">
+        <div class="quote">
+          <p class="quote__text">"以前我们一次发版要半小时，现在 30 秒搞定，团队的发版焦虑消失了。"</p>
+          <div class="quote__author">
+            <div class="quote__avatar">L</div>
+            <div>
+              <div class="quote__name">林老师</div>
+              <div class="quote__role">技术负责人 · 某 SaaS 公司</div>
+            </div>
+          </div>
+        </div>
+        <div class="quote">
+          <p class="quote__text">"一键回滚救了我两次大事故，光这个功能就值这个价。"</p>
+          <div class="quote__author">
+            <div class="quote__avatar">W</div>
+            <div>
+              <div class="quote__name">王工</div>
+              <div class="quote__role">DevOps 工程师 · 跨境电商</div>
+            </div>
+          </div>
+        </div>
+        <div class="quote">
+          <p class="quote__text">"从 Demo 到正式上线只花了一个下午，对独立开发者太友好了。"</p>
+          <div class="quote__author">
+            <div class="quote__avatar">A</div>
+            <div>
+              <div class="quote__name">A梦</div>
+              <div class="quote__role">独立开发者</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing -->
+  <section class="pricing" id="pricing">
+    <div class="container">
+      <div class="section__head">
+        <h2 class="section__title">简单透明的价格</h2>
+        <p class="section__sub">没有隐藏费用，随时升级降级。</p>
+      </div>
+      <div class="pricing__grid">
+        <div class="price">
+          <div class="price__name">免费版</div>
+          <div class="price__amount">¥0<small>/月</small></div>
+          <p class="price__desc">适合个人开发者尝鲜</p>
+          <ul class="price__list">
+            <li>1 个项目</li>
+            <li>每月 100 次部署</li>
+            <li>社区支持</li>
+          </ul>
+          <a href="#" class="btn btn--ghost">开始使用</a>
+        </div>
+        <div class="price price--featured">
+          <div class="price__name">团队版</div>
+          <div class="price__amount">¥199<small>/月</small></div>
+          <p class="price__desc">最适合 5-20 人团队</p>
+          <ul class="price__list">
+            <li>无限项目</li>
+            <li>无限次部署</li>
+            <li>优先支持</li>
+            <li>团队协作</li>
+            <li>操作审计</li>
+          </ul>
+          <a href="#" class="btn btn--primary">免费试用</a>
+        </div>
+        <div class="price">
+          <div class="price__name">企业版</div>
+          <div class="price__amount">联系我们</div>
+          <p class="price__desc">私有部署 · SLA 保障</p>
+          <ul class="price__list">
+            <li>包含团队版全部功能</li>
+            <li>专属客户经理</li>
+            <li>SOC2 合规</li>
+            <li>SSO / SAML</li>
+          </ul>
+          <a href="#" class="btn btn--ghost">联系销售</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta">
+    <div class="container">
+      <h2>今晚就让你的 Demo 上线</h2>
+      <p>14 天免费试用，无需信用卡。</p>
+      <a href="#" class="btn btn--primary btn--lg">立即开始 →</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__grid">
+        <div class="footer__brand">
+          <a href="#" class="navbar__logo"><span class="dot"></span>DeploySea</a>
+          <p>从 Demo 到正式产品，我们让中间那段路消失。</p>
+        </div>
+        <div class="footer__col">
+          <h4>产品</h4>
+          <ul>
+            <li><a href="#">功能</a></li>
+            <li><a href="#">价格</a></li>
+            <li><a href="#">变更日志</a></li>
+          </ul>
+        </div>
+        <div class="footer__col">
+          <h4>资源</h4>
+          <ul>
+            <li><a href="#">文档</a></li>
+            <li><a href="#">博客</a></li>
+            <li><a href="#">社区</a></li>
+          </ul>
+        </div>
+        <div class="footer__col">
+          <h4>公司</h4>
+          <ul>
+            <li><a href="#">关于</a></li>
+            <li><a href="#">联系</a></li>
+            <li><a href="#">隐私</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <span>© 2026 DeploySea. All rights reserved.</span>
+        <span>v1.0 — Traditional</span>
+      </div>
+    </div>
+  </footer>
+  <script src="../_overlay.js" data-version="v1"></script>
+</body>
+</html>
